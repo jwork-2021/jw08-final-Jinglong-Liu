@@ -1,5 +1,6 @@
 package app.server;
 
+import app.base.Direction;
 import app.base.request.KeyCodeRequest;
 import app.base.request.LoginRequest;
 import app.base.Player;
@@ -81,15 +82,19 @@ public class Handler{
                 Player player = game.getPlayer(id);
                 switch (keyCode){
                     case W:
+                        player.setDirection(Direction.UP);
                         player.moveBy(0,-5);
                         break;
                     case S:
+                        player.setDirection(Direction.DOWN);
                         player.moveBy(0,5);
                         break;
                     case A:
+                        player.setDirection(Direction.LEFT);
                         player.moveBy(-5,0);
                         break;
                     case D:
+                        player.setDirection(Direction.RIGHT);
                         player.moveBy(5,0);
                         break;
                     case J:
