@@ -1,10 +1,9 @@
 package app.client;
 
-import app.base.LoginRequest;
+import app.base.request.KeyCodeRequest;
+import app.base.request.LoginRequest;
 import app.base.Player;
-import app.base.SimpleRequest;
 import app.base.World;
-import app.client.Client;
 import app.client.screen.PlayScreen;
 import app.client.screen.RestartScreen;
 import app.client.screen.Screen;
@@ -17,11 +16,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import sun.font.ScriptRun;
 
 import java.io.IOException;
 enum State{
@@ -139,6 +137,7 @@ public class Game {
                 animation.setCycleCount(Timeline.INDEFINITE);
                 animation.getKeyFrames().add(frame);
                 animation.play();
+                scene.setOnKeyPressed(e->keyPress(e.getCode()));
             }
         });
     }
@@ -153,5 +152,13 @@ public class Game {
     }
     private void step(double elapsedTime){
         world.render(graphicsContext);
+    }
+    private void keyPress(KeyCode keyCode){
+        KeyCodeRequest r = new KeyCodeRequest(playerId,keyCode);
+        try {
+            client.queue.offer(ByteUtil.getByteBuffer(r));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

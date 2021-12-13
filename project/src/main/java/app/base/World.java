@@ -1,13 +1,10 @@
 package app.base;
 
+import app.base.request.SendAble;
 import javafx.scene.canvas.GraphicsContext;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 233L;

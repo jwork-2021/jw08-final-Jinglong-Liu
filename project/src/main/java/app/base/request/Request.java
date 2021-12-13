@@ -1,4 +1,6 @@
-package app.base;
+package app.base.request;
+
+import app.base.Thing;
 
 public class Request implements SendAble{
 

@@ -1,8 +1,10 @@
 package app.server;
 
 import app.base.Player;
-import app.base.SendAble;
+import app.base.request.SendAble;
 import app.base.World;
+
+import java.util.HashMap;
 
 public class Game {
     private Handler handler;
@@ -16,6 +18,11 @@ public class Game {
     public void over(){
         player1 = null;
         player2 = null;
+    }
+    public HashMap<String,Player>players = new HashMap<>();
+
+    public Player getPlayer(String playerId) {
+        return players.get(playerId);
     }
 
     public boolean registerPlayer(String playerId){

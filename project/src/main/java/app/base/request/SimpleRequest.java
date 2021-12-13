@@ -1,4 +1,4 @@
-package app.base;
+package app.base.request;
 
 public class SimpleRequest implements SendAble{
     private static final long serialVersionUID = 10L;

@@ -1,7 +1,7 @@
 package app.client.screen;
 
-import app.base.SendAble;
-import app.base.SimpleRequest;
+import app.base.request.SendAble;
+import app.base.request.SimpleRequest;
 import app.client.Client;
 import app.util.ByteUtil;
 import javafx.scene.Scene;

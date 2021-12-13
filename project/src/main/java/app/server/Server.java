@@ -1,12 +1,10 @@
 package app.server;
 
-import app.base.SendAble;
-import app.base.SimpleRequest;
-import app.base.Thing;
+import app.base.request.SendAble;
+import app.base.request.SimpleRequest;
 import app.util.ByteUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

@@ -1,4 +1,4 @@
-package app.base;
+package app.base.request;
 
 public class LoginRequest implements SendAble{
     private static final long serialVersionUID = 12L;

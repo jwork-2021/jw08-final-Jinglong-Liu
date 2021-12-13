@@ -1,4 +1,4 @@
-package app.base;
+package app.base.request;
 
 import java.io.Serializable;
 

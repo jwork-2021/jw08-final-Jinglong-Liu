@@ -1,9 +1,8 @@
 package app.base;
 
+import app.base.request.SendAble;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-
-import java.io.Serializable;
 
 public class Thing implements SendAble {
     private static final long serialVersionUID = 1L;
@@ -55,5 +54,15 @@ public class Thing implements SendAble {
     @Override
     public int getMask() {
         return 1;
+    }
+
+    /**
+     *
+     * @param dx
+     * @param dy
+     */
+    public void moveBy(int dx,int dy){
+        x += dx;
+        y += dy;
     }
 }

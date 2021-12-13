@@ -1,14 +1,15 @@
 package app.server;
 
-import app.base.LoginRequest;
+import app.base.request.KeyCodeRequest;
+import app.base.request.LoginRequest;
 import app.base.Player;
-import app.base.SendAble;
-import app.base.SimpleRequest;
+import app.base.request.SendAble;
+import app.base.request.SimpleRequest;
 import app.server.game.Factory;
 import app.util.ByteUtil;
+import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -67,10 +68,35 @@ public class Handler{
                 //登录成功，发回player.
                 Player player = Factory.createPlayer(id);//create player
                 game.world.add(player);
+                game.players.put(id,player);
                 try {
                     server.queue.offer(ByteUtil.getByteBuffer(player));
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+            }
+            else if(o instanceof KeyCodeRequest){
+                String id = ((KeyCodeRequest) o).getPlayerId();
+                KeyCode keyCode = ((KeyCodeRequest) o).getKeyCode();
+                Player player = game.getPlayer(id);
+                switch (keyCode){
+                    case W:
+                        player.moveBy(0,-5);
+                        break;
+                    case S:
+                        player.moveBy(0,5);
+                        break;
+                    case A:
+                        player.moveBy(-5,0);
+                        break;
+                    case D:
+                        player.moveBy(5,0);
+                        break;
+                    case J:
+                        //attack.
+                        break;
+                    default:
+                        break;
                 }
             }
         }

@@ -1,8 +1,8 @@
 package app.client;
 
 import app.base.*;
+import app.base.request.SendAble;
 import app.util.ByteUtil;
-import javafx.application.Platform;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
