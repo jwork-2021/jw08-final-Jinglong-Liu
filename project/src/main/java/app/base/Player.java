@@ -13,8 +13,8 @@ public class Player extends Tank{
     public void resetPos(){
         setPos(originX,originY);
     }
-    public Player(String id,double originX,double originY){
-        super();
+    public Player(World world,String id,double originX,double originY){
+        super(world);
         this.playerId = id;
         this.originX = originX;
         this.originY = originY;

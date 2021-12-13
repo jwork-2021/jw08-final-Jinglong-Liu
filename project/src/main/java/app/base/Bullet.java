@@ -3,7 +3,8 @@ package app.base;
 public class Bullet extends Thing{
     private static final long serialVersionUID = 100L;
     private int attack = 10;
-    public Bullet(int attack){
+    public Bullet(World world,int attack){
+        super(world);
         this.attack = attack;
     }
 

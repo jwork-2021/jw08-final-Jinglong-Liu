@@ -53,7 +53,7 @@ public class ByteUtil {
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Bullet b1 = new Bullet(12);
+        Bullet b1 = new Bullet(null,12);
         b1.setHp(1);
         byte[] bytes = getBytes(b1);
         Bullet b2 = (Bullet)getObject(bytes);

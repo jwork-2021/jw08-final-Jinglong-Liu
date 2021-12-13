@@ -11,6 +11,10 @@ public class Thing implements SendAble {
     private int hp;
     //private Image image;
     private String imageFile;
+    private World world;
+    public Thing(World world){
+        this.world = world;
+    }
     public void render(GraphicsContext gc) {
         gc.drawImage(getImage(), x, y);//ok.
     }

@@ -67,7 +67,7 @@ public class Handler{
                 System.out.println("用户 " + id +  " 登录成功");
                 //server.queue.offer(buffer);//登录成功信息
                 //登录成功，发回player.
-                Player player = Factory.createPlayer(id);//create player
+                Player player = Factory.createPlayer(game.world, id);//create player
                 game.world.add(player);
                 game.players.put(id,player);
                 try {

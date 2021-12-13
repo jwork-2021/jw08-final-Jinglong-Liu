@@ -5,7 +5,8 @@ import javafx.scene.image.Image;
 public class Tank extends Thing{
     private static final long serialVersionUID = 100000L;
     protected Direction direction;
-    public Tank(){
+    public Tank(World world){
+        super(world);
         setHp(4);
         setDirection(Direction.UP);
     }
