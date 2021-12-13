@@ -13,7 +13,7 @@ public class Thing implements SendAble {
     //private Image image;
     private String imageFile;
     public void render(GraphicsContext gc) {
-        gc.drawImage(getImage(), x, y);
+        gc.drawImage(getImage(), x, y);//ok.
     }
     public double getX() {
         return x;

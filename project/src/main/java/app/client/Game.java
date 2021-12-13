@@ -133,7 +133,7 @@ public class Game {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                stage.setScene(new PlayScreen(client).playScene());
+                stage.setScene(scene);
                 frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
                 animation = new Timeline();
                 animation.setCycleCount(Timeline.INDEFINITE);

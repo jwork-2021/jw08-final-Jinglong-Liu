@@ -55,7 +55,8 @@ public class Handler {
                 }
             }*/
             if(o instanceof World){
-                //game.getWorld().setThings(((World) o).getThings());
+
+                game.getWorld().setThings(((World) o).getThings());
                 //System.out.println(game.getWorld().things().size());
             }
             else if(o instanceof Player){

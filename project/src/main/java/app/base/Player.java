@@ -19,5 +19,6 @@ public class Player extends Tank{
         this.originX = originX;
         this.originY = originY;
         setDirection(Direction.UP);
+        setPos(originX,originY);
     }
 }
