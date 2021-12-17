@@ -1,7 +1,5 @@
 package app.base;
 
-import javafx.scene.image.Image;
-
 public class Tank extends Thing{
     private static final long serialVersionUID = 100000L;
     protected Direction direction;
@@ -21,18 +19,16 @@ public class Tank extends Thing{
         double targetX = getX() + dx;
         double targetY = getY() + dy;
         if(this.outRange(targetX,targetY)){
-            System.out.println("out");
+           //
         }
         else{
             Thing other = world.collideThing(this,targetX,targetY);
             if(other!= null){
                 attack(other);
-                //System.out.println("attack");
             }
             else{
-                super.moveBy(dx,dy);
+                setPos(targetX,targetY);
             }
-            //setPos(targetX,targetY);
         }
     }
 

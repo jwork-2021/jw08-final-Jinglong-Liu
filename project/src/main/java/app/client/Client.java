@@ -34,12 +34,9 @@ public class Client extends Thread {
     private Handler handler;
     public void setHandler(Handler handler) {
         this.handler = handler;
-
+        handler.setClient(this);
     }
-
     SocketChannel sc;
-
-
 
     private void connect(String host,int port){
         try {

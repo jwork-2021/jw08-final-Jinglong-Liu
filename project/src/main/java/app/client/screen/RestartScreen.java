@@ -23,7 +23,7 @@ public class RestartScreen extends Screen{
     public TextField host;
     public TextField port;
     public RestartScreen(){
-        startButton = new Button("Start Game");
+        startButton = new Button("start game");
         startButton.setPrefWidth(120);
         connectButton = new Button("connect");
         //connectButton.setPrefWidth(120);
@@ -32,7 +32,7 @@ public class RestartScreen extends Screen{
         port = new TextField("8090");
     }
 
-    private Node startNode() {
+    protected Node startNode() {
         VBox buttons = new VBox();
 
         buttons.setPadding(new Insets(15, 12, 15, 12));
@@ -84,20 +84,20 @@ public class RestartScreen extends Screen{
     /**
      * @return the title label on the start scene
      */
-    private Label initTitle() {
-        Label title = new Label("Tank Battle");
+    protected Label title(String titleString) {
+        Label title = new Label(titleString);
         title.setFont(new Font(20));
         title.setPadding(new Insets(15, 15, 15, 15));
         title.setTextAlignment(TextAlignment.CENTER);
         return title;
     }
-
     public Scene restartScene() {
+        return restartScene("Tank Battle");
+    }
+    public Scene restartScene(String titleString) {
         BorderPane root = new BorderPane();
-
         Node startNode = startNode();
-        Label title = initTitle();
-
+        Label title = title(titleString);
         root.setTop(title);
         root.setCenter(startNode);
         BorderPane.setAlignment(title, Pos.CENTER);

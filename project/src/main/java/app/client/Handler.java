@@ -1,13 +1,17 @@
 package app.client;
 
 import app.base.*;
+import app.base.request.GameResult;
 import app.base.request.KeyCodeRequest;
 import app.base.request.SendAble;
 import app.base.request.StateRequest;
 import app.util.ByteUtil;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Handler {
@@ -15,6 +19,7 @@ public class Handler {
     private Game game;
     private Client client;
     //private Player player;
+
     public void setClient(Client client) {
         this.client = client;
     }
@@ -44,6 +49,7 @@ public class Handler {
         }
         @Override
         public void run() {
+
             if(o == null){
                 try {
                     o = (SendAble) ByteUtil.getObject(byteBuffer);
@@ -51,20 +57,7 @@ public class Handler {
                     e.printStackTrace();
                 }
             }
-
-            if(o instanceof World){
-                game.getWorld().setThings(((World) o).getThings());
-                game.player = ((World) o).getPlayer(game.playerId);
-                if(game.player == null){
-                    System.out.println("你输啦.");
-                    try {
-                        client.sc.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            else if(o instanceof Player){
+            if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
                 if(id.equals(game.playerId)){
                     game.play();
@@ -74,6 +67,36 @@ public class Handler {
                 else{
                     System.out.println("玩家 " + id + " 登录成功");
                 }
+            }
+            else if(o instanceof GameResult){
+                String state = ((GameResult) o).get(game.playerId);
+                System.out.println(state);
+                if("win".equals(state)){
+                    game.win();
+                }
+                else if("lose".equals(state)){
+                    game.lose();
+                }
+            }
+            else if(game.state == app.client.State.LOSE || game.state == app.client.State.WIN){
+                //return;
+            }
+            else if(o instanceof World){
+                game.getWorld().setThings(((World) o).getThings());
+                game.player = ((World) o).getPlayer(game.playerId);
+                if(game.player == null){
+                    System.out.println("你输啦.");
+                    game.lose();
+                    try {
+                        client.sc.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            else if(o instanceof Handler.StateRequest){
+
             }
         }
     }

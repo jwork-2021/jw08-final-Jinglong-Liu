@@ -7,12 +7,12 @@ import app.base.World;
 import java.util.HashMap;
 
 public class Game {
-    private Handler handler;
+
 
     public int state = 0;
     public World world = new World();
-    public Game(Handler handler){
-        this.handler = handler;
+    public Game(){
+
     }
 
     public HashMap<String,Player>players = new HashMap<>();
@@ -20,7 +20,17 @@ public class Game {
     public Player getPlayer(String playerId) {
         return players.get(playerId);
     }
-
+    public Player getTheOtherPlayer(String playerId){
+        for(String str: players.keySet()){
+            if(!str.equals(playerId)){
+                return players.get(str);
+            }
+        }
+        return null;
+    }
+    public void removePlayer(String playerId){
+        players.remove(playerId);
+    }
     public boolean registerPlayer(String playerId){
         return false;
     }

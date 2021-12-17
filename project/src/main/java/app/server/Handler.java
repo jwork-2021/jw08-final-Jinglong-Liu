@@ -1,6 +1,7 @@
 package app.server;
 
 import app.base.Direction;
+import app.base.PlayerState;
 import app.base.request.*;
 import app.base.Player;
 import app.server.game.Factory;
@@ -10,6 +11,7 @@ import javafx.scene.input.KeyCode;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 
 public class Handler{
     public Game game;
@@ -18,14 +20,14 @@ public class Handler{
         new RecvHandler(server,channel,buffer).start();
     }
     private Server server;
-
+    volatile HashMap<SocketChannel,String> channelIdHashMap = new HashMap<>();
     /**
      * constructor
      * @param server
      */
     public Handler(Server server){
         this.server = server;
-        this.game = new Game(this);
+        this.game = new Game();
     }
     private class RecvHandler extends Thread{
         private SocketChannel channel;
@@ -57,15 +59,29 @@ public class Handler{
                     Player player = null;
                     if(game.players.containsKey(id)){
                         player = game.players.get(id);
-                        System.out.println("已经登录");
+                        switch (player.getState()){
+                            case INIT:
+                            case PLAY:
+                                player.setState(PlayerState.PLAY);
+                                break;
+                            case LOSE:
+                                //break;
+                            case WIN:
+                                //break;
+                                player.setState(PlayerState.INIT);
+                                player = Factory.createPlayer(game.world, id);
+                                break;
+                        }
                     }
                     else{
                         player = Factory.createPlayer(game.world, id);
-                        game.players.put(id,player);
                     }
-                    //Player player = game.players.getOrDefault(id,Factory.createPlayer(game.world, id));
+                    game.players.put(id,player);
+                    channelIdHashMap.put(channel,id);
                     try {
-                        server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(player));
+                        //登录信息反馈
+                        //server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(player));
+                        channel.write(ByteUtil.getByteBuffer(player));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -107,6 +123,19 @@ public class Handler{
                 }
             }
         }
+    }
+    public int checkState(SocketChannel channel){
+        String id = channelIdHashMap.getOrDefault(channel,null);
+        if(id == null){
+            return 0;
+        }
+        if(game.getPlayer(id).getHp() <= 0){
+            return -1;
+        }
+        else if(game.getTheOtherPlayer(id)!=null && game.getTheOtherPlayer(id).getHp() <= 0){
+            return 1;
+        }
+        return 0;
     }
 }
 

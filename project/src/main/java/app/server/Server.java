@@ -1,5 +1,6 @@
 package app.server;
 
+import app.base.request.GameResult;
 import app.base.request.SendAble;
 import app.base.request.SimpleRequest;
 import app.util.ByteUtil;
@@ -19,7 +20,6 @@ public class Server extends Thread{
     private Selector selector;
 
     volatile HashMap<SocketChannel,Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
-
     public Game game;
     public Handler handler;
     public Server(){
@@ -62,10 +62,20 @@ public class Server extends Thread{
                         }
                         if (key.isWritable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
-                            //System.out.println("writable");
+
+                            int state = handler.checkState(sc);
+                            String id = handler.channelIdHashMap.getOrDefault(sc,null);
+                            System.out.println(state);
+                            if(state < 0){
+                                sc.write(ByteUtil.getByteBuffer(GameResult.loserResult(id)));
+                            }
+                            else if(state > 0){
+                                sc.write(ByteUtil.getByteBuffer(GameResult.winnerResult(id)));
+                            }
                             if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
                                 sc.write(channelQueueHashMap.get(sc).poll());
                             }
+
                             sc.register(selector, SelectionKey.OP_READ);
                         }
                     }

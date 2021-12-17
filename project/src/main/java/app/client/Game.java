@@ -4,9 +4,7 @@ import app.base.request.KeyCodeRequest;
 import app.base.request.LoginRequest;
 import app.base.Player;
 import app.base.World;
-import app.client.screen.PlayScreen;
-import app.client.screen.RestartScreen;
-import app.client.screen.Screen;
+import app.client.screen.*;
 import app.util.ByteUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -23,7 +21,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 enum State{
-    INIT,CONNECTED,PLAY,LOST,WIN;
+    INIT,CONNECTED,PLAY,LOSE,WIN;
 }
 public class Game {
     volatile State state;
@@ -52,10 +50,10 @@ public class Game {
 
     public Game(Stage stage){
         this.stage = stage;
-        this.client = new Client();
+        //this.client = new Client();
         this.handler = new Handler(this);
-        handler.setClient(client);
-        client.setHandler(handler);
+        //handler.setClient(client);
+        //client.setHandler(handler);
         this.state = State.INIT;
         this.world = new World();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -76,9 +74,11 @@ public class Game {
         return world;
     }
 
-    public void restart(){
-        screen = new RestartScreen();
+    public void restart(RestartScreen rScreen){
+        //screen = new RestartScreen();
+        screen = rScreen;
         scene = ((RestartScreen) screen).restartScene();
+
         stage.setTitle("Tank Battle");
         stage.setScene(scene);
         stage.setResizable(false);
@@ -100,9 +100,11 @@ public class Game {
         stage.show();
     }
     public void start(){
-        restart();
+        restart(new RestartScreen());
     }
     private void connectRequest(String host,int port){
+        client = new Client();
+        client.setHandler(handler);
         client.setHost(host);
         client.setPort(port);
         client.start();
@@ -143,11 +145,23 @@ public class Game {
             }
         });
     }
-    public void fail(){
-
+    public void lose(){
+        this.state = State.LOSE;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                restart(new LoseScreen());
+            }
+        });
     }
     public void win(){
-
+        this.state = State.WIN;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                restart(new WinScreen());
+            }
+        });
     }
     private void register(){
 
