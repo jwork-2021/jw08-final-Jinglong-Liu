@@ -51,11 +51,9 @@ public class Server extends Thread{
                             System.out.println("用户连接成功");
                         }
                         if (key.isReadable()) {
-                            //System.out.println("readable");
                             SocketChannel sc = (SocketChannel) key.channel();
                             ByteBuffer buffer = ByteBuffer.allocate(1024);
                             int count = sc.read(buffer);
-
                             buffer.flip();
                             handler.handle(sc,buffer);
                             sc.register(selector,  SelectionKey.OP_WRITE);

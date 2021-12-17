@@ -8,8 +8,8 @@ import java.util.List;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 233L;
-    public static int WIDTH = 600;
-    public static int HEIGHT = 600;
+    public static int WIDTH = 680;
+    public static int HEIGHT = 680;
 
     private List<Thing> things = new ArrayList<>();
     public  List<Thing> things(){
