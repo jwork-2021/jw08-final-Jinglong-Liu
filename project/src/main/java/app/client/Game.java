@@ -116,12 +116,11 @@ public class Game {
     }
     public void playRequest(ChoiceBox choiceBox){
         String player = choiceBox.getValue().toString();
-        try {
-            client.queue.offer(ByteUtil.getByteBuffer(new LoginRequest(player)));
+
+            //client.queue.offer(ByteUtil.getByteBuffer(new LoginRequest(player)));
+            client.send(new LoginRequest(player));
             this.playerId = player;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
     public void play(){
         this.state = State.PLAY;
@@ -155,10 +154,10 @@ public class Game {
     }
     private void keyPress(KeyCode keyCode){
         KeyCodeRequest r = new KeyCodeRequest(playerId,keyCode);
-        try {
-            client.queue.offer(ByteUtil.getByteBuffer(r));
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            //client.queue.offer(ByteUtil.getByteBuffer(r));
+        if(this.state == State.PLAY){
+            client.send(r);
         }
     }
 }

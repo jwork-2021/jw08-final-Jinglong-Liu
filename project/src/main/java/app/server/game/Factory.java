@@ -5,6 +5,8 @@ import app.base.World;
 
 public class Factory {
     public static Player createPlayer(World world,String id){
-        return new Player(world,id,25,25);
+        Player player = new Player(world,id,25,25);
+        world.add(player);
+        return player;
     }
 }

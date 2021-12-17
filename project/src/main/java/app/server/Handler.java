@@ -1,24 +1,22 @@
 package app.server;
 
 import app.base.Direction;
-import app.base.request.KeyCodeRequest;
-import app.base.request.LoginRequest;
+import app.base.request.*;
 import app.base.Player;
-import app.base.request.SendAble;
-import app.base.request.SimpleRequest;
 import app.server.game.Factory;
 import app.util.ByteUtil;
 import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class Handler{
     public Game game;
     private static int playerNum = 0;
     public void handle(SocketChannel channel,ByteBuffer buffer){
-        new RecvHandler(server,channel,buffer).run();
+        new RecvHandler(server,channel,buffer).start();
     }
     private Server server;
 
@@ -32,7 +30,7 @@ public class Handler{
     }
 
 
-    private class RecvHandler{
+    private class RecvHandler extends Thread{
         private SocketChannel channel;
         private ByteBuffer byteBuffer;
         private Server server;
@@ -41,6 +39,7 @@ public class Handler{
             this.byteBuffer = buffer;
             this.channel = channel;
         }
+        @Override
         public void run() {
             handle(channel,byteBuffer);
         }
@@ -67,11 +66,26 @@ public class Handler{
                 System.out.println("用户 " + id +  " 登录成功");
                 //server.queue.offer(buffer);//登录成功信息
                 //登录成功，发回player.
-                Player player = Factory.createPlayer(game.world, id);//create player
-                game.world.add(player);
+                Player player = null;
+                if(game.players.containsKey(id)){
+                    player = game.players.get(id);
+                }
+                else{
+                    player = Factory.createPlayer(game.world, id);
+                }
+                //Player player = game.players.getOrDefault(id,Factory.createPlayer(game.world, id));
                 game.players.put(id,player);
                 try {
-                    server.queue.offer(ByteUtil.getByteBuffer(player));
+                    server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(player));
+                    //server.broadcast(player);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(o instanceof StateRequest){
+                try {
+                    server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.world));
+                    //server.queue.add(Server.MyNode.allocate(ByteUtil.getByteBuffer(game.world),channel));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -105,17 +119,6 @@ public class Handler{
                 }
             }
         }
-    }
-
-    public void broadcast(SendAble o){
-        try {
-            server.queue.offer(ByteUtil.getByteBuffer(o));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public synchronized void send(SendAble o,SocketChannel channel){
-
     }
 }
 

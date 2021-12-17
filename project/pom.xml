@@ -25,6 +25,21 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <resources>
+            <resource>
+                <directory>images</directory>
+                <includes>
+                    <include>*.gif</include>
+                    <include>*.png</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>sounds</directory>
+                <includes>
+                    <include>*.mp3</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-graphics -->
