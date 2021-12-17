@@ -103,6 +103,8 @@ public class Game {
         restart();
     }
     private void connectRequest(String host,int port){
+        client.setHost(host);
+        client.setPort(port);
         client.start();
     }
     public void connectSucceed(){

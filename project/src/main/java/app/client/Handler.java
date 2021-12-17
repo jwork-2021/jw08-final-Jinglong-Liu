@@ -54,7 +54,6 @@ public class Handler {
 
             if(o instanceof World){
                 game.getWorld().setThings(((World) o).getThings());
-                //System.out.println(game.getWorld().things().size());
                 game.player = ((World) o).getPlayer(game.playerId);
                 if(game.player == null){
                     System.out.println("你输啦.");

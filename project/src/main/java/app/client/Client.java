@@ -20,8 +20,16 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
 public class Client extends Thread {
-    //ObjectOutputStream out;
-    ObjectInputStream in;
+    String host;
+    int port;
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     private Handler handler;
     public void setHandler(Handler handler) {
@@ -29,18 +37,16 @@ public class Client extends Thread {
 
     }
 
-    private String playerId;
     SocketChannel sc;
-    private Selector selector;
+
 
 
     private void connect(String host,int port){
         try {
             sc = SocketChannel.open();
-            //selector = Selector.open();
-            //sc.configureBlocking(false);
-            //sc.register(selector, SelectionKey.OP_CONNECT);
             sc.connect(new InetSocketAddress(host, port));
+            //block until connect.
+            System.out.println("connect");
             handler.connect();
         }
         catch (IOException e){
@@ -51,8 +57,8 @@ public class Client extends Thread {
     @Override
     public void run() {
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        connect("localhost",8090);
         try{
+            connect(host,port);
             while(true){
                 readBuffer.clear();
                 sc.read(readBuffer);
