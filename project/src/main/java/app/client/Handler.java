@@ -52,21 +52,18 @@ public class Handler {
                 }
             }
 
-            /*
-            if(o instanceof LoginRequest){
-                String player = ((LoginRequest) o).getId();
-                if(player.equals(game.playerId)){
-                    game.play();
-                }
-                else{
-                    System.out.println("玩家 " + player + " 登录");
-                }
-            }*/
             if(o instanceof World){
-
                 game.getWorld().setThings(((World) o).getThings());
-                System.out.println(game.getWorld().things().size());
-
+                //System.out.println(game.getWorld().things().size());
+                game.player = ((World) o).getPlayer(game.playerId);
+                if(game.player == null){
+                    System.out.println("你输啦.");
+                    try {
+                        client.sc.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             else if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
@@ -85,10 +82,9 @@ public class Handler {
     private class StateRequest extends Thread{
         @Override
         public void run() {
-            while(!interrupted()){
+            while(game.state == app.client.State.PLAY){
                 try{
                     client.send(srq);
-                    System.out.println("send");
                     TimeUnit.MILLISECONDS.sleep(60);
                 }
                 catch (InterruptedException e){

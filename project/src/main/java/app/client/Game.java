@@ -26,7 +26,7 @@ enum State{
     INIT,CONNECTED,PLAY,LOST,WIN;
 }
 public class Game {
-    State state;
+    volatile State state;
     private Handler handler;
     private Client client;
     private GraphicsContext graphicsContext;
@@ -63,9 +63,10 @@ public class Game {
             public void handle(WindowEvent event) {
                 try {
                     System.out.println("Quit game");
+                    client.sc.close();
                     System.exit(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ignored) {
+
                 }
             }
         });
@@ -154,8 +155,6 @@ public class Game {
     }
     private void keyPress(KeyCode keyCode){
         KeyCodeRequest r = new KeyCodeRequest(playerId,keyCode);
-
-            //client.queue.offer(ByteUtil.getByteBuffer(r));
         if(this.state == State.PLAY){
             client.send(r);
         }

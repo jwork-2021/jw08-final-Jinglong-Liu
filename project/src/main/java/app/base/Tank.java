@@ -5,8 +5,8 @@ import javafx.scene.image.Image;
 public class Tank extends Thing{
     private static final long serialVersionUID = 100000L;
     protected Direction direction;
-    public Tank(World world){
-        super(world);
+    public Tank(World world,double maxHP,double attackValue,double defenseValue){
+        super(world,maxHP,attackValue,defenseValue);
         setHp(4);
         setDirection(Direction.UP);
     }
@@ -24,13 +24,16 @@ public class Tank extends Thing{
             System.out.println("out");
         }
         else{
-            setPos(targetX,targetY);
-            System.out.println(targetX);
-            System.out.println(targetX);
-            System.out.println(this.outRange(targetX,targetY));
-            System.out.println();
+            Thing other = world.collideThing(this,targetX,targetY);
+            if(other!= null){
+                attack(other);
+                //System.out.println("attack");
+            }
+            else{
+                super.moveBy(dx,dy);
+            }
+            //setPos(targetX,targetY);
         }
-
     }
 
     public void setImage() {

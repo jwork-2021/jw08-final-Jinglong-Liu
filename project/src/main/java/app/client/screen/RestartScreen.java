@@ -32,7 +32,7 @@ public class RestartScreen extends Screen{
         port = new TextField("8090");
     }
 
-    private Node initStartViewButtons() {
+    private Node startNode() {
         VBox buttons = new VBox();
 
         buttons.setPadding(new Insets(15, 12, 15, 12));
@@ -95,16 +95,13 @@ public class RestartScreen extends Screen{
     public Scene restartScene() {
         BorderPane root = new BorderPane();
 
-        Node startViewButtons = initStartViewButtons();
+        Node startNode = startNode();
         Label title = initTitle();
 
         root.setTop(title);
-        root.setCenter(startViewButtons);
+        root.setCenter(startNode);
         BorderPane.setAlignment(title, Pos.CENTER);
         Scene scn = new Scene(root, 680, 680);
         return scn;
-    }
-    public void start(){
-
     }
 }

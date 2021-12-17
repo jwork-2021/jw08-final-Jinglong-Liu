@@ -9,7 +9,6 @@ import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class Handler{
@@ -28,8 +27,6 @@ public class Handler{
         this.server = server;
         this.game = new Game(this);
     }
-
-
     private class RecvHandler extends Thread{
         private SocketChannel channel;
         private ByteBuffer byteBuffer;
@@ -50,42 +47,33 @@ public class Handler{
             } catch (ClassNotFoundException  | IOException e) {
                 e.printStackTrace();
             }
-            if(o instanceof SimpleRequest){
-                String request = ((SimpleRequest) o).getRequest();
-                switch (request){
-                    case "player1":
-                    case "player2":
-                        game.registerPlayer(request);
-                    default:
-                        break;
-                }
-            }
-            else if(o instanceof LoginRequest){
-                String id = ((LoginRequest) o).getId();
-                server.map.put(id,channel);
-                System.out.println("用户 " + id +  " 登录成功");
-                //server.queue.offer(buffer);//登录成功信息
-                //登录成功，发回player.
-                Player player = null;
-                if(game.players.containsKey(id)){
-                    player = game.players.get(id);
-                }
-                else{
-                    player = Factory.createPlayer(game.world, id);
-                }
-                //Player player = game.players.getOrDefault(id,Factory.createPlayer(game.world, id));
-                game.players.put(id,player);
-                try {
-                    server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(player));
-                    //server.broadcast(player);
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+            if(o instanceof LoginRequest){
+                synchronized (game.players){
+                    String id = ((LoginRequest) o).getId();
+                    System.out.println("用户 " + id +  " 登录成功");
+                    //server.queue.offer(buffer);//登录成功信息
+                    //登录成功，发回player.
+                    Player player = null;
+                    if(game.players.containsKey(id)){
+                        player = game.players.get(id);
+                        System.out.println("已经登录");
+                    }
+                    else{
+                        player = Factory.createPlayer(game.world, id);
+                        game.players.put(id,player);
+                    }
+                    //Player player = game.players.getOrDefault(id,Factory.createPlayer(game.world, id));
+                    try {
+                        server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(player));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             else if(o instanceof StateRequest){
                 try {
                     server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.world));
-                    //server.queue.add(Server.MyNode.allocate(ByteUtil.getByteBuffer(game.world),channel));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

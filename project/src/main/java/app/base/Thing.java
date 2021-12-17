@@ -1,6 +1,7 @@
 package app.base;
 
 import app.base.request.SendAble;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -8,14 +9,37 @@ public class Thing implements SendAble {
     private static final long serialVersionUID = 1L;
     private double x;
     private double y;
-    private int hp;
+    private double hp;
     //private Image image;
     private String imageFile;
     protected World world;
     protected double width;
     protected double height;
-    public Thing(World world){
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    private double attackValue;
+    private double defenseValue;
+
+    public double getAttackValue() {
+        return attackValue;
+    }
+
+    public double getDefenseValue() {
+        return defenseValue;
+    }
+
+    public Thing(World world,double maxHP,double attackValue,double defenseValue){
         this.world = world;
+        this.hp = maxHP;
+        this.attackValue = attackValue;
+        this.defenseValue = defenseValue;
     }
 
     public void render(GraphicsContext gc) {
@@ -34,7 +58,7 @@ public class Thing implements SendAble {
         this.y = y;
     }
 
-    public int getHp() {
+    public double getHp() {
         return hp;
     }
 
@@ -42,8 +66,8 @@ public class Thing implements SendAble {
         this.hp = hp;
     }
 
-    public void modifyHp(int amount){
-        hp -= amount;
+    public void modifyHp(double amount){
+        hp += amount;
         if(hp <= 0){
             world.remove(this);
         }
@@ -81,9 +105,20 @@ public class Thing implements SendAble {
         y += dy;
     }
     public void attack(Thing other){
-
+        double damage = Math.max(getAttackValue() - other.getDefenseValue(),0);
+        other.modifyHp(-damage);
     }
     public boolean outRange(double targetX,double targetY){
         return world.outRange(targetX,targetY,height,width);
+    }
+
+    private Rectangle2D getRect() {
+        return new Rectangle2D(x,y,width,height);
+    }
+    private Rectangle2D getRect(double x, double y){
+        return new Rectangle2D(x, y, width, height);
+    }
+    public boolean intersects(double targetX,double targetY,Thing thing) {
+        return getRect(targetX,targetY).intersects(thing.getRect());
     }
 }

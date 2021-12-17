@@ -43,11 +43,38 @@ public class World implements SendAble {
     public List<Thing> getThings() {
         return things;
     }
-    public Thing collideThing(Thing thing){
+    public Thing collideThing(Thing thing,double targetX,double targetY){
+        for(Thing other:getThings()){
+            if(thing == other){
+                continue;
+            }
+            if(thing.intersects(targetX,targetY,other)){
+                return other;
+            }
+        }
         return null;
     }
     @Override
     public int getMask() {
         return 233;
+    }
+    public Player getPlayer(String id){
+        for(Thing thing:getThings()){
+            if(thing instanceof Player){
+                if(((Player) thing).getPlayerId().equals(id)){
+                    return (Player) thing;
+                }
+            }
+        }
+        return null;
+    }
+    public int playerCount(){
+        int count = 0;
+        for(Thing thing:getThings()){
+            if(thing instanceof Player){
+                count++;
+            }
+        }
+        return count;
     }
 }
