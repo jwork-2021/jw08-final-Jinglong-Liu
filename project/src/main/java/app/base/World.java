@@ -21,12 +21,11 @@ public class World implements SendAble {
     public void remove(Thing thing){
         things.remove(thing);
     }
-    public boolean outRange(Thing thing){
-        return false;
+
+    public final boolean outRange(double x,double y,double w,double h){
+        return x < 0 || y < 0 || x + w > WIDTH || y + h > WIDTH;
     }
-    public boolean outRange(int x,int y){
-        return false;
-    }
+
     public void render(GraphicsContext gc){
         gc.clearRect(0, 0, WIDTH,HEIGHT);
         synchronized (things){
@@ -44,7 +43,9 @@ public class World implements SendAble {
     public List<Thing> getThings() {
         return things;
     }
-
+    public Thing collideThing(Thing thing){
+        return null;
+    }
     @Override
     public int getMask() {
         return 233;

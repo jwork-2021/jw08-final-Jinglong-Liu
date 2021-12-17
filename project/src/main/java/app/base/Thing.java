@@ -11,10 +11,13 @@ public class Thing implements SendAble {
     private int hp;
     //private Image image;
     private String imageFile;
-    private World world;
+    protected World world;
+    protected double width;
+    protected double height;
     public Thing(World world){
         this.world = world;
     }
+
     public void render(GraphicsContext gc) {
         gc.drawImage(getImage(), x, y);//ok.
     }
@@ -41,10 +44,18 @@ public class Thing implements SendAble {
 
     public void modifyHp(int amount){
         hp -= amount;
+        if(hp <= 0){
+            world.remove(this);
+        }
     }
 
     public void setImage(String filename) {
         this.imageFile = filename;
+        Image image = new Image(getClass().getClassLoader().getResourceAsStream(imageFile));
+        height = image.getHeight();
+        width = image.getWidth();
+        //System.out.println("height = " + height);
+        //System.out.println("width = " + width);
     }
 
     public Image getImage() {
@@ -65,8 +76,14 @@ public class Thing implements SendAble {
      * @param dx
      * @param dy
      */
-    public void moveBy(int dx,int dy){
+    public void moveBy(double dx,double dy){
         x += dx;
         y += dy;
+    }
+    public void attack(Thing other){
+
+    }
+    public boolean outRange(double targetX,double targetY){
+        return world.outRange(targetX,targetY,height,width);
     }
 }

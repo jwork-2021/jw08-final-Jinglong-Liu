@@ -16,6 +16,23 @@ public class Tank extends Thing{
         this.setImage();
     }
 
+    @Override
+    public void moveBy(double dx, double dy) {
+        double targetX = getX() + dx;
+        double targetY = getY() + dy;
+        if(this.outRange(targetX,targetY)){
+            System.out.println("out");
+        }
+        else{
+            setPos(targetX,targetY);
+            System.out.println(targetX);
+            System.out.println(targetX);
+            System.out.println(this.outRange(targetX,targetY));
+            System.out.println();
+        }
+
+    }
+
     public void setImage() {
         switch (direction){
             case UP:
