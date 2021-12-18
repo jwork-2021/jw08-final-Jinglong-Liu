@@ -15,24 +15,13 @@ public class Game {
 
     }
 
-    public HashMap<String,Player>players = new HashMap<>();
+    //public HashMap<String,Player>players = new HashMap<>();
 
     public Player getPlayer(String playerId) {
-        return players.get(playerId);
+        return world.getPlayer(playerId);
     }
     public Player getTheOtherPlayer(String playerId){
-        for(String str: players.keySet()){
-            if(!str.equals(playerId)){
-                return players.get(str);
-            }
-        }
-        return null;
-    }
-    public void removePlayer(String playerId){
-        players.remove(playerId);
-    }
-    public boolean registerPlayer(String playerId){
-        return false;
+        return world.getOtherPlayer(playerId);
     }
 
 }

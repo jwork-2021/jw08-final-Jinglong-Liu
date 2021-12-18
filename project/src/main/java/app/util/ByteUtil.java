@@ -1,13 +1,17 @@
 package app.util;
 
 import app.base.Bullet;
+import app.base.Player;
 import app.base.Thing;
+import app.base.World;
+import app.server.game.Factory;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -72,5 +76,11 @@ public class ByteUtil {
         System.out.println(df.format(new Date()));// new Date()为获取当前系统时间
         System.out.println(new Date());
         System.out.println(new Date());
+
+        HashMap<String, Player>hashMap = new HashMap<>();
+        hashMap.put("a", Factory.createPlayer(new World(),"aa"));
+        ByteBuffer buffer = ByteUtil.getByteBuffer(hashMap);
+        hashMap = (HashMap<String, Player>) ByteUtil.getObject(buffer);
+        System.out.println(hashMap.get("a").getHp());
     }
 }

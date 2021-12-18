@@ -83,8 +83,10 @@ public class Handler {
             }
             else if(o instanceof World){
                 game.getWorld().setThings(((World) o).getThings());
+                //game.getWorld().setPlayers(((World) o).getPlayers());
                 game.player = ((World) o).getPlayer(game.playerId);
-                if(game.player == null){
+
+                if(game.player.getHp() <= 0){
                     System.out.println("你输啦.");
                     game.lose();
                     try {

@@ -51,32 +51,33 @@ public class Handler{
             }
 
             if(o instanceof LoginRequest){
-                synchronized (game.players){
+                synchronized (game.world.getPlayers()){
                     String id = ((LoginRequest) o).getId();
                     System.out.println("用户 " + id +  " 登录成功");
                     //server.queue.offer(buffer);//登录成功信息
                     //登录成功，发回player.
-                    Player player = null;
-                    if(game.players.containsKey(id)){
-                        player = game.players.get(id);
+                    Player player = game.getPlayer(id);
+                    if(player!= null){
                         switch (player.getState()){
                             case INIT:
                             case PLAY:
                                 player.setState(PlayerState.PLAY);
                                 break;
                             case LOSE:
-                                //break;
                             case WIN:
-                                //break;
                                 player.setState(PlayerState.INIT);
                                 player = Factory.createPlayer(game.world, id);
                                 break;
                         }
+
                     }
                     else{
                         player = Factory.createPlayer(game.world, id);
+                        game.world.getPlayers().add(player);
                     }
-                    game.players.put(id,player);
+
+                    //game.players.put(id,player);
+                    //game.world.getPlayers().put(id,player);
                     channelIdHashMap.put(channel,id);
                     try {
                         //登录信息反馈
@@ -126,7 +127,7 @@ public class Handler{
     }
     public int checkState(SocketChannel channel){
         String id = channelIdHashMap.getOrDefault(channel,null);
-        if(id == null){
+        if(id == null || game.getPlayer(id) == null){
             return 0;
         }
         if(game.getPlayer(id).getHp() <= 0){

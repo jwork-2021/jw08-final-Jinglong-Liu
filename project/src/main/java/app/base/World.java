@@ -4,14 +4,32 @@ import app.base.request.SendAble;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 233L;
     public static int WIDTH = 680;
     public static int HEIGHT = 680;
+    public World(){
+        restart();
+    }
+    //private HashMap<String,Player>players;
+    private List<Player> players;
 
-    private List<Thing> things = new ArrayList<>();
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void restart(){
+        things = new ArrayList<>();
+        players = new ArrayList<>();
+    }
+    private List<Thing> things;
     public  List<Thing> things(){
         return things;
     }
@@ -59,11 +77,17 @@ public class World implements SendAble {
         return 233;
     }
     public Player getPlayer(String id){
-        for(Thing thing:getThings()){
-            if(thing instanceof Player){
-                if(((Player) thing).getPlayerId().equals(id)){
-                    return (Player) thing;
-                }
+        for(Player player:players){
+            if(id.equals(player.getPlayerId())){
+                return player;
+            }
+        }
+        return null;
+    }
+    public Player getOtherPlayer(String id){
+        for(Player player:players){
+            if(!id.equals(player.getPlayerId())){
+                return player;
             }
         }
         return null;
