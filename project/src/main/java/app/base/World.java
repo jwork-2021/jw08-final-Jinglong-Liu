@@ -14,7 +14,7 @@ public class World implements SendAble {
     public World(){
         restart();
     }
-    //private HashMap<String,Player>players;
+    //private HashMap<String,Player>players;//error.
     private List<Player> players;
 
     public void setPlayers(List<Player> players) {
@@ -91,14 +91,5 @@ public class World implements SendAble {
             }
         }
         return null;
-    }
-    public int playerCount(){
-        int count = 0;
-        for(Thing thing:getThings()){
-            if(thing instanceof Player){
-                count++;
-            }
-        }
-        return count;
     }
 }

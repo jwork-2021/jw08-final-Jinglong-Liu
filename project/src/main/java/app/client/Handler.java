@@ -115,6 +115,7 @@ public class Handler {
                     e.printStackTrace();
                 }
             }
+            game.state = app.client.State.INIT;
         }
     }
 }

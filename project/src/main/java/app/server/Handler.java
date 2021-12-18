@@ -56,6 +56,9 @@ public class Handler{
                     System.out.println("用户 " + id +  " 登录成功");
                     //server.queue.offer(buffer);//登录成功信息
                     //登录成功，发回player.
+                    if(game.state!=0){
+                        game.restart();
+                    }
                     Player player = game.getPlayer(id);
                     if(player!= null){
                         switch (player.getState()){

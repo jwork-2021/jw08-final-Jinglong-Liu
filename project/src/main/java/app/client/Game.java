@@ -76,6 +76,7 @@ public class Game {
 
     public void restart(RestartScreen rScreen){
         //screen = new RestartScreen();
+        world.restart();
         screen = rScreen;
         scene = ((RestartScreen) screen).restartScene();
 
@@ -156,6 +157,7 @@ public class Game {
     }
     public void win(){
         this.state = State.WIN;
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -163,9 +165,7 @@ public class Game {
             }
         });
     }
-    private void register(){
 
-    }
     private void step(double elapsedTime){
         world.render(graphicsContext);
     }

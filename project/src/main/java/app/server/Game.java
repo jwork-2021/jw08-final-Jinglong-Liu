@@ -14,9 +14,10 @@ public class Game {
     public Game(){
 
     }
-
-    //public HashMap<String,Player>players = new HashMap<>();
-
+    public void restart(){
+        state = 0;
+        world.restart();
+    }
     public Player getPlayer(String playerId) {
         return world.getPlayer(playerId);
     }

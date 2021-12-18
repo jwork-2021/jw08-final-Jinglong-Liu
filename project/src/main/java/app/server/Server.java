@@ -63,14 +63,15 @@ public class Server extends Thread{
 
                             int state = handler.checkState(sc);
                             String id = handler.channelIdHashMap.getOrDefault(sc,null);
-                            System.out.println(state);
                             if(state < 0){
                                 sc.write(ByteUtil.getByteBuffer(GameResult.loserResult(id)));
+                                game.state = 1;
                             }
                             else if(state > 0){
+                                game.state = -1;
                                 sc.write(ByteUtil.getByteBuffer(GameResult.winnerResult(id)));
                             }
-                            if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
+                            else if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
                                 sc.write(channelQueueHashMap.get(sc).poll());
                             }
 
