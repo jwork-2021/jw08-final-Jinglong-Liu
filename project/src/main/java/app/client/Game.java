@@ -4,8 +4,7 @@ import app.base.request.KeyCodeRequest;
 import app.base.request.LoginRequest;
 import app.base.Player;
 import app.base.World;
-import app.client.screen.*;
-import app.util.ByteUtil;
+import app.client.ui.screen.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -19,7 +18,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-import java.io.IOException;
 enum State{
     INIT,CONNECTED,PLAY,LOSE,WIN;
 }

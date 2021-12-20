@@ -1,4 +1,4 @@
-package app.client.screen;
+package app.client.ui.screen;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;

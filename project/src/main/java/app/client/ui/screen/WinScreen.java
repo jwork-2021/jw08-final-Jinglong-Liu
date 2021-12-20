@@ -1,4 +1,4 @@
-package app.client.screen;
+package app.client.ui.screen;
 
 import javafx.scene.Scene;
 

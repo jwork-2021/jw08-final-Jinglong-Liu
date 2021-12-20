@@ -1,16 +1,13 @@
-package app.client.screen;
+package app.client.ui.screen;
 
 import app.base.request.SendAble;
 import app.base.request.SimpleRequest;
 import app.client.Client;
-import app.util.ByteUtil;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-
-import java.io.IOException;
 
 import static app.base.World.WIDTH;
 import static app.base.World.HEIGHT;

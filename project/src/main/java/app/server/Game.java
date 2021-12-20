@@ -3,16 +3,15 @@ package app.server;
 import app.base.Player;
 import app.base.request.SendAble;
 import app.base.World;
+import app.server.game.Factory;
 
 import java.util.HashMap;
 
 public class Game {
-
-
     public int state = 0;
-    public World world = new World();
+    public World world = Factory.createWorld();
     public Game(){
-
+        System.out.println(world.getPlayers().size());
     }
     public void restart(){
         state = 0;

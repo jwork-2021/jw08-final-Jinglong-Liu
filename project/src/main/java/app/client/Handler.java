@@ -1,11 +1,10 @@
 package app.client;
 
 import app.base.*;
-import app.base.request.GameResult;
-import app.base.request.KeyCodeRequest;
-import app.base.request.SendAble;
-import app.base.request.StateRequest;
+import app.base.request.*;
+import app.client.ui.util.UIHelper;
 import app.util.ByteUtil;
+import javafx.scene.control.Alert;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
@@ -96,7 +95,11 @@ public class Handler {
                     }
                 }
             }
-
+            else if (o instanceof AlreadyLoginResponse){
+                String id = ((AlreadyLoginResponse) o).getId();
+                System.out.println(id + "已经登录，请不要重复登录。");
+                UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
+            }
             else if(o instanceof Handler.StateRequest){
 
             }

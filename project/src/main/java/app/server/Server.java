@@ -4,6 +4,7 @@ import app.base.request.GameResult;
 import app.base.request.SendAble;
 import app.base.request.SimpleRequest;
 import app.util.ByteUtil;
+import app.util.SaveUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
@@ -20,21 +21,23 @@ public class Server extends Thread{
     private Selector selector;
 
     volatile HashMap<SocketChannel,Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
-    public Game game;
+    //public Game game;
     public Handler handler;
+
+    private int port = 8090;
+    private int playerNumber = 2;
     public Server(){
         handler = new Handler(this);
-        game = handler.game;
     }
     @Override
     public void run(){
         try {
             ssc = ServerSocketChannel.open();
-            ssc.bind(new InetSocketAddress(8090));
+            ssc.bind(new InetSocketAddress(port));
             selector = Selector.open();
             ssc.configureBlocking(false);
             ssc.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("start listening...");
+            System.out.println("服务器已启动，端口:" + port);
             while (true) {
                 int nReady = selector.select();
                 Set<SelectionKey> keys = selector.selectedKeys();
@@ -65,10 +68,10 @@ public class Server extends Thread{
                             String id = handler.channelIdHashMap.getOrDefault(sc,null);
                             if(state < 0){
                                 sc.write(ByteUtil.getByteBuffer(GameResult.loserResult(id)));
-                                game.state = 1;
+                                handler.setGameState(1);
                             }
                             else if(state > 0){
-                                game.state = -1;
+                                handler.setGameState(-1);
                                 sc.write(ByteUtil.getByteBuffer(GameResult.winnerResult(id)));
                             }
                             else if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
@@ -81,8 +84,11 @@ public class Server extends Thread{
                     catch (IOException e){
                         System.out.println("断开连接");
                         SocketChannel sc = (SocketChannel) key.channel();
+                        handler.handleOffline(sc);
                         sc.close();
                         this.channelQueueHashMap.remove(sc);
+                        handler.saveWorld();
+
                         it.remove();
                         continue;
                     }

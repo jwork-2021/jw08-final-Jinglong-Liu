@@ -28,6 +28,16 @@ public class Player extends Tank{
         this.originY = originY;
         setDirection(Direction.UP);
         setPos(originX,originY);
+        this.online = true;
+    }
+    private boolean online = false;
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    public boolean isOnline() {
+        return online;
     }
 
     @Override

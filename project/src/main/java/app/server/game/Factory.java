@@ -2,6 +2,7 @@ package app.server.game;
 
 import app.base.Player;
 import app.base.World;
+import app.util.FetchUtil;
 
 import java.util.Random;
 
@@ -19,5 +20,17 @@ public class Factory {
         }
         world.add(player);
         return player;
+    }
+    public static World createWorld(){
+        World world = null;
+        try{
+            world = FetchUtil.fetchWorld("world");
+            System.out.println("load succeed");
+        }
+        catch (Exception e){
+            System.out.println("load fail");
+            world = new World();
+        }
+        return world;
     }
 }

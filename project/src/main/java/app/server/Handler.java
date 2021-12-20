@@ -2,10 +2,13 @@ package app.server;
 
 import app.base.Direction;
 import app.base.PlayerState;
+import app.base.World;
 import app.base.request.*;
 import app.base.Player;
 import app.server.game.Factory;
 import app.util.ByteUtil;
+import app.util.FetchUtil;
+import app.util.SaveUtil;
 import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
@@ -61,18 +64,25 @@ public class Handler{
                     }
                     Player player = game.getPlayer(id);
                     if(player!= null){
+                        if(player.isOnline()){
+                            System.out.println("重复登录");
+                            try {
+                                //登录信息反馈
+                                //server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(player));
+                                channel.write(ByteUtil.getByteBuffer(new AlreadyLoginResponse(id)));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+                        player.setOnline(true);
                         switch (player.getState()){
-                            case INIT:
-                            case PLAY:
-                                player.setState(PlayerState.PLAY);
-                                break;
                             case LOSE:
                             case WIN:
                                 player.setState(PlayerState.INIT);
                                 player = Factory.createPlayer(game.world, id);
                                 break;
                         }
-
                     }
                     else{
                         player = Factory.createPlayer(game.world, id);
@@ -140,6 +150,22 @@ public class Handler{
             return 1;
         }
         return 0;
+    }
+    public void setGameState(int state){
+        game.state = state;
+    }
+    public void handleOffline(SocketChannel channel){
+        String id = channelIdHashMap.getOrDefault(channel,null);
+        if(id != null){
+            Player player = game.getPlayer(id);
+            player.setOnline(false);
+        }
+    }
+    public void saveWorld(){
+        SaveUtil.saveWorld(game.world, "world");
+    }
+    public World loadWorld(){
+        return FetchUtil.fetchWorld("world");
     }
 }
 
