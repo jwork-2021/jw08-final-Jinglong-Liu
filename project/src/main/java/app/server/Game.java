@@ -34,6 +34,7 @@ public class Game {
 
     public void restart(){
         world.restart();
+
     }
     public Player getPlayer(String playerId) {
         return world.getPlayer(playerId);

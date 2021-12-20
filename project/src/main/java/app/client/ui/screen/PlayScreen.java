@@ -35,14 +35,7 @@ public class PlayScreen extends Screen{
         root.setCenter(canvas);
         graphicsContext = canvas.getGraphicsContext2D();
         Scene scene = new Scene(root,WIDTH,HEIGHT);
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         return scene;
     }
-    private void handleKeyInput(KeyCode code){
-        SendAble request = new SimpleRequest(code.getName());
 
-        //client.queue.offer(ByteUtil.getByteBuffer(request));
-        client.send(request);
-
-    }
 }

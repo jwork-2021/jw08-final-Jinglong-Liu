@@ -104,10 +104,8 @@ public class World implements SendAble {
         return null;
     }
 
-    public void clearPlayers(){
-        for(Player p:players){
-            things.remove(p);
-        }
-        players.clear();
+    public void removePlayer(Player player){
+        things.remove(player);
+        players.remove(player);
     }
 }

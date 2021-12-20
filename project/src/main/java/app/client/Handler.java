@@ -72,12 +72,10 @@ public class Handler {
                     game.lose();
                 }
             }
-            else if(game.state == app.client.State.LOSE || game.state == app.client.State.WIN){
-                //return;
-            }
             else if(o instanceof World){
                 //System.out.println(((World) o).getPlayers().size());
                 game.getWorld().setThings(((World) o).getThings());
+                //((World) o).render(game.getGraphicsContext());
                 //game.getWorld().setPlayers(((World) o).getPlayers());
                 game.player = ((World) o).getPlayer(game.playerId);
 

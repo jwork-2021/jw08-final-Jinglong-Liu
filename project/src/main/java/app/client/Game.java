@@ -38,6 +38,10 @@ public class Game {
     private Timeline animation;
     Player player;
 
+    public GraphicsContext getGraphicsContext() {
+        return graphicsContext;
+    }
+
     public void setPlayer(Player player) {
         this.player = player;
     }
@@ -121,9 +125,9 @@ public class Game {
     public void playRequest(ChoiceBox choiceBox){
         String player = choiceBox.getValue().toString();
 
-            //client.queue.offer(ByteUtil.getByteBuffer(new LoginRequest(player)));
-            client.send(new LoginRequest(player));
-            this.playerId = player;
+        //client.queue.offer(ByteUtil.getByteBuffer(new LoginRequest(player)));
+        client.send(new LoginRequest(player));
+        this.playerId = player;
 
     }
     public void play(){
