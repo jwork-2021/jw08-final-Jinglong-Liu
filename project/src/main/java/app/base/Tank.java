@@ -5,12 +5,12 @@ public class Tank extends Thing{
     protected Direction direction;
     public Tank(World world,double maxHP,double attackValue,double defenseValue){
         super(world,maxHP,attackValue,defenseValue);
+        setWhite();
         setHp(4);
         setDirection(Direction.UP);
     }
     public void setDirection(Direction direction) {
         this.direction = direction;
-        setWhite();
         this.setImage();
     }
 
@@ -81,6 +81,12 @@ public class Tank extends Thing{
         TANK_DOWN = GREEN_TANK_DOWN;
         TANK_LEFT = GREEN_TANK_LEFT;
         TANK_RIGHT = GREEN_TANK_RIGHT;
+    }
+    public void setYellow(){
+        TANK_UP = YELLOW_TANK_UP;
+        TANK_DOWN = YELLOW_TANK_DOWN;
+        TANK_LEFT = YELLOW_TANK_LEFT;
+        TANK_RIGHT = YELLOW_TANK_RIGHT;
     }
     protected static final String WHITE_TANK_UP = "white-tank-up.gif";
     protected static final String WHITE_TANK_DOWN = "white-tank-down.gif";

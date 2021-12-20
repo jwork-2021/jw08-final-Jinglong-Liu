@@ -29,6 +29,7 @@ public class Player extends Tank{
         setDirection(Direction.UP);
         setPos(originX,originY);
         this.online = true;
+        setColor();
     }
     private boolean online = false;
 
@@ -46,5 +47,25 @@ public class Player extends Tank{
         if(getHp() <= 0){
             setState(PlayerState.LOSE);
         }
+        setColor();
+    }
+    public void setColor(){
+        int hp = (int)getHp();
+        System.out.println(hp + " set color");
+        switch (hp){
+            case 1:
+                setWhite();
+                break;
+            case 2:
+                setRed();
+                break;
+            case 3:
+                setYellow();
+                break;
+            default:
+                setGreen();
+                break;
+        }
+        setImage();
     }
 }
