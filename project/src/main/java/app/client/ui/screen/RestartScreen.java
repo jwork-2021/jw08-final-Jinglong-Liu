@@ -48,7 +48,7 @@ public class RestartScreen extends Screen{
         HBox start = new HBox();
 
         choiceBox = new ChoiceBox(FXCollections.observableArrayList(
-                "player1", "player2")
+                "player1", "player2","player3")
         );
         start.getChildren().addAll(choiceBox,startButton);
         start.setAlignment(Pos.CENTER);

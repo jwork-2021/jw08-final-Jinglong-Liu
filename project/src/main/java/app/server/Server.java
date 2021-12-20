@@ -73,9 +73,7 @@ public class Server extends Thread{
                         }
                         if (key.isWritable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
-
                             handler.write(sc);
-
                             sc.register(selector, SelectionKey.OP_READ);
                         }
                     }
@@ -83,6 +81,7 @@ public class Server extends Thread{
                         System.out.println("断开连接");
                         SocketChannel sc = (SocketChannel) key.channel();
                         handler.handleOffline(sc);
+
                         sc.close();
                         //handler.channelQueueHashMap.remove(sc);
                         //handler.saveWorld();

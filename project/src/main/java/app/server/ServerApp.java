@@ -14,6 +14,6 @@ public class ServerApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        new ServerScene(primaryStage).start();
+        new Main(primaryStage).start();
     }
 }

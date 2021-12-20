@@ -22,7 +22,8 @@ public class Factory {
         return player;
     }
     public static World createWorld(){
-        World world = null;
+        //World world = null;
+        /*
         try{
             world = FetchUtil.fetchWorld("world");
             System.out.println("load succeed");
@@ -30,7 +31,8 @@ public class Factory {
         catch (Exception e){
             System.out.println("load fail");
             world = new World();
-        }
-        return world;
+        }*/
+        return new World();
+        //return world;
     }
 }

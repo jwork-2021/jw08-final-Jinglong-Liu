@@ -1,6 +1,7 @@
 package app.base;
 
 import app.base.request.SendAble;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ public class World implements SendAble {
     private static final long serialVersionUID = 233L;
     public static int WIDTH = 680;
     public static int HEIGHT = 680;
+    private int state = 0;
     public World(){
         restart();
     }
@@ -25,9 +27,18 @@ public class World implements SendAble {
         return players;
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public int getState() {
+        return state;
+    }
+
     public void restart(){
         things = new ArrayList<>();
         players = new ArrayList<>();
+        state = 0;
     }
     private List<Thing> things;
     public  List<Thing> things(){
@@ -91,5 +102,12 @@ public class World implements SendAble {
             }
         }
         return null;
+    }
+
+    public void clearPlayers(){
+        for(Player p:players){
+            things.remove(p);
+        }
+        players.clear();
     }
 }

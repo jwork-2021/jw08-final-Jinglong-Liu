@@ -95,10 +95,20 @@ public class Handler {
                     }
                 }
             }
-            else if (o instanceof AlreadyLoginResponse){
-                String id = ((AlreadyLoginResponse) o).getId();
-                System.out.println(id + "已经登录，请不要重复登录。");
-                UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
+            //else if (o instanceof AlreadyLoginResponse){
+            //    String id = ((AlreadyLoginResponse) o).getId();
+            //    System.out.println(id + "已经登录，请不要重复登录。");
+            //    UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
+            //}
+            else if(o instanceof LoginFailResponse){
+                String type = ((LoginFailResponse) o).type();
+                String id = ((LoginFailResponse) o).getId();
+                if(type.equals("already")){
+                    UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
+                }
+                else{
+                    UIHelper.prompt("提示","当前游戏已满员，请稍后再来");
+                }
             }
             else if(o instanceof Handler.StateRequest){
 
