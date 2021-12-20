@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.Queue;
 
 public class Handler{
     public Game game;
@@ -24,6 +25,7 @@ public class Handler{
     }
     private Server server;
     volatile HashMap<SocketChannel,String> channelIdHashMap = new HashMap<>();
+    volatile HashMap<SocketChannel, Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
     /**
      * constructor
      * @param server
@@ -31,6 +33,11 @@ public class Handler{
     public Handler(Server server){
         this.server = server;
         this.game = new Game();
+    }
+    public Handler(Server server,Game game){
+        this.server = server;
+        server.setHandler(this);
+        this.game = game;
     }
     private class RecvHandler extends Thread{
         private SocketChannel channel;
@@ -103,7 +110,7 @@ public class Handler{
             }
             else if(o instanceof StateRequest){
                 try {
-                    server.channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.world));
+                    channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.world));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -155,17 +162,47 @@ public class Handler{
         game.state = state;
     }
     public void handleOffline(SocketChannel channel){
+        channelQueueHashMap.remove(channel);
         String id = channelIdHashMap.getOrDefault(channel,null);
         if(id != null){
+            System.out.println(id);
             Player player = game.getPlayer(id);
             player.setOnline(false);
         }
+        saveWorld();
     }
     public void saveWorld(){
         SaveUtil.saveWorld(game.world, "world");
     }
     public World loadWorld(){
         return FetchUtil.fetchWorld("world");
+    }
+    public void write(SocketChannel sc){
+        int state = checkState(sc);
+        String id = channelIdHashMap.getOrDefault(sc,null);
+        if(state < 0){
+            try {
+                sc.write(ByteUtil.getByteBuffer(GameResult.loserResult(id)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setGameState(1);
+        }
+        else if(state > 0){
+            setGameState(-1);
+            try {
+                sc.write(ByteUtil.getByteBuffer(GameResult.winnerResult(id)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
+            try {
+                sc.write(channelQueueHashMap.get(sc).poll());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 

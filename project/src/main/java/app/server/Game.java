@@ -11,7 +11,10 @@ public class Game {
     public int state = 0;
     public World world = Factory.createWorld();
     public Game(){
-        System.out.println(world.getPlayers().size());
+
+    }
+    public Game(World world){
+        this.world = world;
     }
     public void restart(){
         state = 0;

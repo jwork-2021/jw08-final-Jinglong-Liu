@@ -20,7 +20,7 @@ public class Server extends Thread{
     private ServerSocketChannel ssc;
     private Selector selector;
 
-    volatile HashMap<SocketChannel,Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
+    //volatile HashMap<SocketChannel,Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
     //public Game game;
     public Handler handler;
 
@@ -29,15 +29,26 @@ public class Server extends Thread{
     public Server(){
         handler = new Handler(this);
     }
+    public Server(int port){
+        handler = new Handler(this);
+        port = port;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+    private void bind() throws IOException{
+        ssc = ServerSocketChannel.open();
+        ssc.bind(new InetSocketAddress(port));
+        selector = Selector.open();
+        ssc.configureBlocking(false);
+        ssc.register(selector, SelectionKey.OP_ACCEPT);
+        System.out.println("服务器已启动，端口:" + port);
+    }
     @Override
     public void run(){
         try {
-            ssc = ServerSocketChannel.open();
-            ssc.bind(new InetSocketAddress(port));
-            selector = Selector.open();
-            ssc.configureBlocking(false);
-            ssc.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("服务器已启动，端口:" + port);
+            this.bind();
             while (true) {
                 int nReady = selector.select();
                 Set<SelectionKey> keys = selector.selectedKeys();
@@ -49,8 +60,7 @@ public class Server extends Thread{
                             SocketChannel sc = ssc.accept();
                             sc.configureBlocking(false);//
                             sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-
-                            this.channelQueueHashMap.put(sc,new ConcurrentLinkedDeque<>());
+                            handler.channelQueueHashMap.put(sc,new ConcurrentLinkedDeque<>());
                             System.out.println("用户连接成功");
                         }
                         if (key.isReadable()) {
@@ -64,19 +74,7 @@ public class Server extends Thread{
                         if (key.isWritable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
 
-                            int state = handler.checkState(sc);
-                            String id = handler.channelIdHashMap.getOrDefault(sc,null);
-                            if(state < 0){
-                                sc.write(ByteUtil.getByteBuffer(GameResult.loserResult(id)));
-                                handler.setGameState(1);
-                            }
-                            else if(state > 0){
-                                handler.setGameState(-1);
-                                sc.write(ByteUtil.getByteBuffer(GameResult.winnerResult(id)));
-                            }
-                            else if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
-                                sc.write(channelQueueHashMap.get(sc).poll());
-                            }
+                            handler.write(sc);
 
                             sc.register(selector, SelectionKey.OP_READ);
                         }
@@ -86,9 +84,8 @@ public class Server extends Thread{
                         SocketChannel sc = (SocketChannel) key.channel();
                         handler.handleOffline(sc);
                         sc.close();
-                        this.channelQueueHashMap.remove(sc);
-                        handler.saveWorld();
-
+                        //handler.channelQueueHashMap.remove(sc);
+                        //handler.saveWorld();
                         it.remove();
                         continue;
                     }
