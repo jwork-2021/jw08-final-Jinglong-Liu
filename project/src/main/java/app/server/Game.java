@@ -9,15 +9,29 @@ import app.util.SaveUtil;
 import java.util.HashMap;
 
 public class Game {
-    public int limit;
+    private int limit;
     public World world;
-    public Game(){
-        world = Factory.createWorld();
-    }
     public Game(World world,int number){
         this.world = world;
         this.limit = number;
     }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
     public void restart(){
         world.restart();
     }

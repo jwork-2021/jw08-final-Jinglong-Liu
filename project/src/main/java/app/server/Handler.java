@@ -30,11 +30,7 @@ public class Handler{
      * constructor
      * @param server
      */
-    public Handler(Server server){
-        this.server = server;
-        this.game = new Game();
-        assert false;
-    }
+
     public Handler(Server server,Game game){
         this.server = server;
         server.setHandler(this);
@@ -62,22 +58,19 @@ public class Handler{
             }
 
             if(o instanceof LoginRequest){
-                synchronized (game.world.getPlayers()){
+                synchronized (game.getWorld()){
                     String id = ((LoginRequest) o).getId();
-                    System.out.println("用户 " + id +  " 登录成功");
+
                     //server.queue.offer(buffer);//登录成功信息
                     //登录成功，发回player.
-                    if(game.world.getState()!=0){
+                    if(game.getWorld().getState()!=0){
                         game.restart();
                         handle(channel,buffer);
                     }
                     Player player = game.getPlayer(id);
                     if(player!= null){
-                        if(game.world.getPlayers().size() == game.limit){
-
-                        }
                         if(player.isOnline()){
-                            System.out.println("重复登录");
+                            System.out.println(id + "重复登录");
                             try {
                                 channel.write(ByteUtil.getByteBuffer(new LoginFailResponse(id,"already")));
                             } catch (Exception e) {
@@ -88,7 +81,8 @@ public class Handler{
                         player.setOnline(true);
                     }
                     else{
-                        if(game.world.getPlayers().size() == game.limit){
+                        if(game.getWorld().getPlayers().size() >= game.getLimit()){
+                            System.out.println("超过人数上限");
                             try {
                                 channel.write(ByteUtil.getByteBuffer(new LoginFailResponse(id,"limit")));
                             } catch (Exception e) {
@@ -96,11 +90,13 @@ public class Handler{
                             }
                             return;
                         }
-                        player = Factory.createPlayer(game.world, id);
-                        game.world.getPlayers().add(player);
+                        player = Factory.createPlayer(game.getWorld(), id);
+
+                        game.getWorld().getPlayers().add(player);
                     }
                     channelIdHashMap.put(channel,id);
                     try {
+                        System.out.println("用户 " + id +  " 登录成功");
                         channel.write(ByteUtil.getByteBuffer(player));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -109,8 +105,8 @@ public class Handler{
             }
             else if(o instanceof StateRequest){
                 try {
-                    channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.world));
-                } catch (IOException e) {
+                    channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.getWorld()));
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -167,6 +163,7 @@ public class Handler{
             System.out.println(id);
             Player player = game.getPlayer(id);
             player.setOnline(false);
+            SaveUtil.saveWorld(game.world,"world");
         }
         saveWorld();
     }
@@ -174,6 +171,11 @@ public class Handler{
         game.saveWorld();
     }
     public void write(SocketChannel sc){
+        try {
+            System.out.println(ByteUtil.getByteBuffer(game.world).remaining());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         int state = checkState(sc);
         String id = channelIdHashMap.getOrDefault(sc,null);
         if(state < 0){

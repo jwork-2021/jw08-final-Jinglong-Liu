@@ -1,4 +1,4 @@
-package app.client.ui.util;
+package app.util;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;

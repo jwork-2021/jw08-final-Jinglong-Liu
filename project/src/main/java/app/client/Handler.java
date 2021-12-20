@@ -2,22 +2,17 @@ package app.client;
 
 import app.base.*;
 import app.base.request.*;
-import app.client.ui.util.UIHelper;
+import app.util.UIHelper;
 import app.util.ByteUtil;
-import javafx.scene.control.Alert;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Handler {
     private app.base.request.StateRequest srq = new app.base.request.StateRequest();
     private Game game;
     private Client client;
-    //private Player player;
 
     public void setClient(Client client) {
         this.client = client;
@@ -30,7 +25,7 @@ public class Handler {
         new RecvHandler(buffer).start();
     }
     public void handle(Object o){
-        new RecvHandler(o).start();
+        new RecvHandler(o).run();
     }
 
     public void connect(){
@@ -56,6 +51,7 @@ public class Handler {
                     e.printStackTrace();
                 }
             }
+
             if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
                 if(id.equals(game.playerId)){
@@ -69,7 +65,6 @@ public class Handler {
             }
             else if(o instanceof GameResult){
                 String state = ((GameResult) o).get(game.playerId);
-                System.out.println(state);
                 if("win".equals(state)){
                     game.win();
                 }
@@ -81,6 +76,7 @@ public class Handler {
                 //return;
             }
             else if(o instanceof World){
+                //System.out.println(((World) o).getPlayers().size());
                 game.getWorld().setThings(((World) o).getThings());
                 //game.getWorld().setPlayers(((World) o).getPlayers());
                 game.player = ((World) o).getPlayer(game.playerId);
@@ -95,11 +91,7 @@ public class Handler {
                     }
                 }
             }
-            //else if (o instanceof AlreadyLoginResponse){
-            //    String id = ((AlreadyLoginResponse) o).getId();
-            //    System.out.println(id + "已经登录，请不要重复登录。");
-            //    UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
-            //}
+
             else if(o instanceof LoginFailResponse){
                 String type = ((LoginFailResponse) o).type();
                 String id = ((LoginFailResponse) o).getId();

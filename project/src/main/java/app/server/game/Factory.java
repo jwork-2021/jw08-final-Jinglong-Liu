@@ -21,18 +21,10 @@ public class Factory {
         world.add(player);
         return player;
     }
-    public static World createWorld(){
-        //World world = null;
-        /*
-        try{
-            world = FetchUtil.fetchWorld("world");
-            System.out.println("load succeed");
-        }
-        catch (Exception e){
-            System.out.println("load fail");
-            world = new World();
-        }*/
+    public static World loadWorld(String fileName){
+        return FetchUtil.fetchWorld(fileName);
+    }
+    public static World emptyWorld(){
         return new World();
-        //return world;
     }
 }

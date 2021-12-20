@@ -19,8 +19,7 @@ public class SaveUtil {
         }
         return true;
     }
-    public static boolean saveWorld(World world,String url){
-        //world.clearPlayers();
-        return save(world,url);
+    public static boolean saveWorld(World world,String fileName){
+        return save(world,fileName);
     }
 }

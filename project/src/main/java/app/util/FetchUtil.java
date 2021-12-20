@@ -1,5 +1,6 @@
 package app.util;
 
+import app.base.Player;
 import app.base.World;
 
 import java.io.FileInputStream;
@@ -32,6 +33,11 @@ public class FetchUtil {
         return (Serializable) o;
     }
     public static World fetchWorld(String url){
-        return (World) fetch(World.class,url);
+        World world = (World) fetch(World.class,url);
+        for(Player player:world.getPlayers()){
+            player.setOnline(false);
+        }
+        System.out.println(world.getPlayers().size());
+        return world;
     }
 }

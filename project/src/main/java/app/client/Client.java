@@ -53,7 +53,7 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer readBuffer = ByteBuffer.allocate(2048);
         try{
             connect(host,port);
             while(true){

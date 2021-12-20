@@ -26,12 +26,12 @@ public class Server extends Thread{
 
     private int port = 8090;
     private int playerNumber = 2;
-    public Server(){
-        handler = new Handler(this);
-    }
     public Server(int port){
-        handler = new Handler(this);
         port = port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public void setHandler(Handler handler) {

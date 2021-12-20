@@ -40,10 +40,9 @@ public class PlayScreen extends Screen{
     }
     private void handleKeyInput(KeyCode code){
         SendAble request = new SimpleRequest(code.getName());
-        System.out.println(code.getName());
 
-            //client.queue.offer(ByteUtil.getByteBuffer(request));
-            client.send(request);
+        //client.queue.offer(ByteUtil.getByteBuffer(request));
+        client.send(request);
 
     }
 }
