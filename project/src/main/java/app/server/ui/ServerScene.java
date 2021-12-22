@@ -25,7 +25,7 @@ import javafx.stage.WindowEvent;
 public class ServerScene {
     //private Stage stage;
     public ChoiceBox limit = new ChoiceBox(FXCollections.observableArrayList(
-            2, 3,4));
+            2, 3,4,5,6));
     public TextField port = new TextField("8090");
     public Button loadButton = new Button("加载地图");
     public Button resetButton = new Button("更改人数");

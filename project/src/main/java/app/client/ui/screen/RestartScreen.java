@@ -1,5 +1,6 @@
 package app.client.ui.screen;
 
+import app.base.World;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -41,15 +42,16 @@ public class RestartScreen extends Screen{
 
         Text text = new Text();
         text.setFont(new Font(16));
-        text.setWrappingWidth(400);
+        //text.setWrappingWidth(400);
         text.setTextAlignment(TextAlignment.CENTER);
         text.setText("WASD or arrow keys to move around\n\nJ to shoot\n\nProtect your home and destroy enemies");
 
         HBox start = new HBox();
 
         choiceBox = new ChoiceBox(FXCollections.observableArrayList(
-                "player1", "player2","player3")
+                "player1", "player2","player3","player4","player5","player6")
         );
+        choiceBox.setValue("player1");
         start.getChildren().addAll(choiceBox,startButton);
         start.setAlignment(Pos.CENTER);
 
@@ -62,6 +64,8 @@ public class RestartScreen extends Screen{
         HBox box3 = new HBox();
         HBox line = new HBox();
         line.getChildren().add(new Label());
+        HBox line1 = new HBox();
+        line1.getChildren().add(new Label());
         box1.getChildren().addAll(label1,host);
         box2.getChildren().addAll(label2,port);
         box3.getChildren().addAll(connectButton);
@@ -69,13 +73,13 @@ public class RestartScreen extends Screen{
         box2.setAlignment(Pos.CENTER);
 
         box3.setAlignment(Pos.CENTER);
-        connect.getChildren().addAll(box1,box2,line,box3);
+        connect.getChildren().addAll(box1,box2,line,box3,line1,start);
 
-
+        //connect.getChildren().add(start);
         connect.setAlignment(Pos.CENTER);
         connect.setCenterShape(true);
         //buttons.getChildren().addAll(text,connect,start);
-        buttons.getChildren().addAll(connect,start);
+        buttons.getChildren().addAll(connect);
         buttons.setAlignment(Pos.CENTER);
 
         return buttons;
@@ -101,7 +105,7 @@ public class RestartScreen extends Screen{
         root.setTop(title);
         root.setCenter(startNode);
         BorderPane.setAlignment(title, Pos.CENTER);
-        Scene scn = new Scene(root, 680, 680);
+        Scene scn = new Scene(root, World.WIDTH, World.HEIGHT);
         return scn;
     }
 }

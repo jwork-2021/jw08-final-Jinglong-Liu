@@ -3,6 +3,9 @@ package app.util;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class UIHelper {
     public static void prompt(String title,String text){
         Platform.runLater(new Runnable() {

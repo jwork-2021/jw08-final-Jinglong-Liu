@@ -14,6 +14,10 @@ public class Handler {
     private Game game;
     private Client client;
 
+    public Client getClient() {
+        return client;
+    }
+
     public void setClient(Client client) {
         this.client = client;
     }
@@ -110,8 +114,9 @@ public class Handler {
                     UIHelper.prompt("你输啦","你已经出局。当前游戏尚未结束，请稍后再来。");
                 }
             }
-            else if(o instanceof Handler.StateRequest){
-
+            else if(o instanceof MessageResponse){
+                String message = ((MessageResponse) o).getMessage();
+                game.addMessage(message);
             }
         }
     }

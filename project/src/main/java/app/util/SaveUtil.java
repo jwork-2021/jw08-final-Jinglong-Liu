@@ -1,6 +1,9 @@
 package app.util;
 
+import app.base.Bullet;
+import app.base.NPTank;
 import app.base.World;
+import sun.java2d.opengl.WGLSurfaceData;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,6 +23,8 @@ public class SaveUtil {
         return true;
     }
     public static boolean saveWorld(World world,String fileName){
+        world.clearItem(Bullet.class);
+        world.clearItem(NPTank.class);
         return save(world,fileName);
     }
 }

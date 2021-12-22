@@ -4,6 +4,7 @@ import app.base.request.KeyCodeRequest;
 import app.base.request.LoginRequest;
 import app.base.Player;
 import app.base.World;
+import app.base.request.MessageRequest;
 import app.client.ui.screen.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -37,6 +38,10 @@ public class Game {
     private KeyFrame frame;
     private Timeline animation;
     Player player;
+
+    public Stage getStage() {
+        return stage;
+    }
 
     public GraphicsContext getGraphicsContext() {
         return graphicsContext;
@@ -79,6 +84,7 @@ public class Game {
     public void restart(RestartScreen rScreen){
         //screen = new RestartScreen();
         world.restart();
+
         screen = rScreen;
         scene = ((RestartScreen) screen).restartScene();
 
@@ -139,12 +145,21 @@ public class Game {
             @Override
             public void run() {
                 stage.setScene(scene);
+                stage.setTitle(playerId);
                 frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
                 animation = new Timeline();
                 animation.setCycleCount(Timeline.INDEFINITE);
                 animation.getKeyFrames().add(frame);
                 animation.play();
                 scene.setOnKeyPressed(e->keyPress(e.getCode()));
+            }
+        });
+        ((PlayScreen) screen).button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handler.getClient().send(new MessageRequest(
+                        playerId + ":"+((PlayScreen) screen).textField.getText()));
+                ((PlayScreen) screen).textField.clear();
             }
         });
     }
@@ -176,5 +191,11 @@ public class Game {
         if(this.state == State.PLAY){
             client.send(r);
         }
+    }
+    public void addMessage(String message){
+        if(!(screen instanceof PlayScreen)){
+
+        }
+        ((PlayScreen) screen).textArea.appendText(message + "\n");
     }
 }

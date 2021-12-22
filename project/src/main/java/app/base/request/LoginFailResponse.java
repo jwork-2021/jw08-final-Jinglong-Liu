@@ -6,7 +6,7 @@ package app.base.request;
  */
 
 public class LoginFailResponse implements SendAble{
-    private static final long serialVersionUID = 111114L;
+    private static final long serialVersionUID = 111113L;
     private String id;
     private String errorType;
     public LoginFailResponse(String id,String type){

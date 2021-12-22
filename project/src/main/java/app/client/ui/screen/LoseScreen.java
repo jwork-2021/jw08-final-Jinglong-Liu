@@ -9,6 +9,6 @@ public class LoseScreen extends RestartScreen{
 
     @Override
     public Scene restartScene() {
-        return super.restartScene("你输啦\n\n勿以输小而不麻");
+        return super.restartScene("你输啦!!");
     }
 }

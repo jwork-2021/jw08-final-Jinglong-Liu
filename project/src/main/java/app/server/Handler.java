@@ -1,14 +1,12 @@
 package app.server;
 
-import app.base.Direction;
-import app.base.PlayerState;
-import app.base.World;
+import app.base.*;
 import app.base.request.*;
-import app.base.Player;
 import app.server.game.Factory;
 import app.util.ByteUtil;
 import app.util.FetchUtil;
 import app.util.SaveUtil;
+import app.util.ThreadPoolUtil;
 import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
@@ -16,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Queue;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Handler{
@@ -96,6 +95,11 @@ public class Handler{
                         break;
                 }
             }
+
+            else if(o instanceof MessageRequest){
+                SendAble response = new MessageResponse(((MessageRequest) o).getMessage());
+                broadcast(response);
+            }
         }
     }
     public int checkState(SocketChannel channel){
@@ -129,8 +133,10 @@ public class Handler{
             Player player = game.getPlayer(id);
             player.setOnline(false);
             SaveUtil.saveWorld(game.getWorld(),"world");
+            broadcast(new MessageResponse(id + " 离线"));
         }
-        saveWorld();
+
+        //saveWorld();
     }
     public void saveWorld(){
         game.saveWorld();
@@ -215,9 +221,26 @@ public class Handler{
             try {
                 System.out.println("用户 " + id +  " 登录成功");
                 channel.write(ByteUtil.getByteBuffer(player));
+                for(Queue queue:channelQueueHashMap.values()){
+                    queue.offer(ByteUtil.getByteBuffer(new MessageResponse("用户 " + id + "登录成功")));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+    private void broadcast(SendAble o){
+        for(Queue queue:channelQueueHashMap.values()){
+            try {
+                queue.offer(ByteUtil.getByteBuffer(o));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void broadcast(ByteBuffer buffer){
+        for(Queue queue:channelQueueHashMap.values()){
+            queue.offer(buffer);
         }
     }
 }

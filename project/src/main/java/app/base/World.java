@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 233L;
-    public static int WIDTH = 680;
-    public static int HEIGHT = 680;
+    public static int WIDTH = 460;
+    public static int HEIGHT = 460;
     private int state = 0;
     public World(){
         restart();
@@ -115,4 +116,14 @@ public class World implements SendAble {
                 filter(thing->thing.getClass() == cls)
                 .collect(Collectors.toList()).size();
     }
+    public void clearItem(Class<? extends Thing>cls){
+        things = things.stream().
+                filter(thing->thing.getClass() != cls)
+                .collect(Collectors.toList());
+    }
+    public int onlinePlayerCount(){
+        return players.stream().filter(player -> player.isOnline())
+                .collect(Collectors.toList()).size();
+    }
+
 }

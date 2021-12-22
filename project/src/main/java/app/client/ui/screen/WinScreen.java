@@ -8,6 +8,6 @@ public class WinScreen extends RestartScreen{
     }
     @Override
     public Scene restartScene() {
-        return super.restartScene("你赢啦\n\n勿以赢小而不麻");
+        return super.restartScene("你赢啦!!");
     }
 }
