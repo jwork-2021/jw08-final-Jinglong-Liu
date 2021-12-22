@@ -51,7 +51,11 @@ public class Handler {
                     e.printStackTrace();
                 }
             }
-
+            try {
+                System.out.println(ByteUtil.getByteBuffer(o).remaining());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
                 if(id.equals(game.playerId)){
@@ -88,6 +92,9 @@ public class Handler {
                         e.printStackTrace();
                     }
                 }
+                //System.out.println("bullets " + ((World) o).countThing(Bullet.class));
+                //System.out.println("npc: " + ((World) o).countThing(NPTank.class));
+
             }
 
             else if(o instanceof LoginFailResponse){

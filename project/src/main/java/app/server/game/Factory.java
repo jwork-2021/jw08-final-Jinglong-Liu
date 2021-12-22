@@ -1,16 +1,15 @@
 package app.server.game;
 
-import app.base.NPTank;
-import app.base.Player;
-import app.base.Tank;
-import app.base.World;
+import app.base.*;
 import app.util.FetchUtil;
+import app.util.ThreadPoolUtil;
+import sun.nio.ch.ThreadPool;
 
 import java.util.Random;
 
 public class Factory {
     public static Player createPlayer(World world,String id){
-        Player player = new Player(world,id,25,25,4,2,1);
+        Player player = new Player(world,id,-100,-200,4,2,1);
         double width = (int)player.getWidth();
         double height = (int)player.getHeight();
         while(world.outRange(player.getX(), player.getY(), width, height)
@@ -27,8 +26,39 @@ public class Factory {
         NPTank npc = new NPTank(world,2,2,1);
         npc.setWhite();
         addTank(world,npc);
-        new Thread(npc).start();
+        //new Thread(npc).start();
+        ThreadPoolUtil.execute(npc);
     }
+    public static void createBullet(World world,Tank owner){
+        Bullet bullet = new Bullet(world,1,owner.getAttackValue(),0);
+        bullet.setDirection(owner.getDirection());
+        bullet.setOwner(owner);
+        bullet.setPos(owner.getX() + (owner.getWidth()- bullet.getWidth())/2,
+                owner.getY() + (owner.getHeight() - bullet.getHeight())/2);
+
+        while(bullet.intersects(owner)){
+            switch (bullet.getDirection()){
+                case UP:
+                    bullet.setPos(bullet.getX(),bullet.getY()-5);
+                    break;
+                case DOWN:
+                    bullet.setPos(bullet.getX(),bullet.getY()+5);
+                    break;
+                case LEFT:
+                    bullet.setPos(bullet.getX() - 5,bullet.getY());
+                    break;
+                case RIGHT:
+                    bullet.setPos(bullet.getX() + 5,bullet.getY());
+                    break;
+            }
+        }
+
+
+        world.add(bullet);
+        ThreadPoolUtil.execute(bullet);
+        //new Thread(bullet).start();
+    }
+
     private static void addTank(World world,Tank tank){
         double width = (int)tank.getWidth();
         double height = (int)tank.getHeight();

@@ -43,7 +43,6 @@ public class Client extends Thread {
             sc = SocketChannel.open();
             sc.connect(new InetSocketAddress(host, port));
             //block until connect.
-            System.out.println("connect");
             handler.connect();
         }
         catch (IOException e){
@@ -53,7 +52,7 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        ByteBuffer readBuffer = ByteBuffer.allocate(2048);
+        ByteBuffer readBuffer = ByteBuffer.allocate(4096);
         try{
             connect(host,port);
             while(true){

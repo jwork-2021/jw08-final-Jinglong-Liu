@@ -15,11 +15,21 @@ public class Thing implements SendAble {
     protected World world;
     protected double width;
     protected double height;
+    private Direction direction;
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+        this.setImage();
+    }
 
+    public Direction getDirection() {
+        return direction;
+    }
     public double getWidth() {
         return width;
     }
+    public void setImage(){
 
+    }
     public double getHeight() {
         return height;
     }
@@ -120,5 +130,28 @@ public class Thing implements SendAble {
     }
     public boolean intersects(double targetX,double targetY,Thing thing) {
         return getRect(targetX,targetY).intersects(thing.getRect());
+    }
+    public boolean intersects(Thing thing) {
+        return getRect().intersects(thing.getRect());
+    }
+    public void move(int distance){
+        distance = Math.abs(distance);
+        switch (getDirection()){
+            case LEFT:
+                moveBy(-distance,0);
+                break;
+            case UP:
+                moveBy(0,-distance);
+                break;
+            case DOWN:
+                moveBy(0,distance);
+                break;
+            case RIGHT:
+                moveBy(distance,0);
+                break;
+        }
+    }
+    public void outRangeAction(){
+
     }
 }

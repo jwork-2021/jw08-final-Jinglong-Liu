@@ -1,22 +1,22 @@
 package app.base;
 
+import app.server.game.Factory;
+import app.util.ThreadPoolUtil;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public class Tank extends Thing{
     private static final long serialVersionUID = 100000L;
-    protected Direction direction;
+
+    //private Direction direction;
     public Tank(World world,double maxHP,double attackValue,double defenseValue){
         super(world,maxHP,attackValue,defenseValue);
         setWhite();
         setHp(4);
         setDirection(Direction.UP);
     }
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-        this.setImage();
-    }
 
-    public Direction getDirection() {
-        return direction;
-    }
 
     @Override
     public void moveBy(double dx, double dy) {
@@ -35,8 +35,9 @@ public class Tank extends Thing{
             }
         }
     }
-
+    @Override
     public void setImage() {
+        Direction direction = getDirection();
         switch (direction){
             case UP:
                 setImage(TANK_UP);
@@ -54,8 +55,12 @@ public class Tank extends Thing{
                 break;
         }
     }
-    protected void shoot(){
+    public void shoot(){
         System.out.println("shoot");
+        //new Thread(Factory.createBullet(world,this)).start();
+        //ThreadPoolUtil.execute(Factory.createBullet(world,this));
+        Factory.createBullet(world,this);
+        System.out.println("ok.");//not ok
     }
     /**
      * set white color

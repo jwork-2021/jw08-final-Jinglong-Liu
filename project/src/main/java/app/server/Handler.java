@@ -90,7 +90,7 @@ public class Handler{
                         player.moveBy(5,0);
                         break;
                     case J:
-                        //attack.
+                        player.shoot();
                         break;
                     default:
                         break;

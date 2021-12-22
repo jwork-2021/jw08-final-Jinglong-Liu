@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class World implements SendAble {
@@ -37,8 +38,8 @@ public class World implements SendAble {
     }
 
     public void restart(){
-        things = new ArrayList<>();
-        players = new ArrayList<>();
+        things = new CopyOnWriteArrayList<>();
+        players = new CopyOnWriteArrayList<>();
         state = 0;
     }
     private List<Thing> things;

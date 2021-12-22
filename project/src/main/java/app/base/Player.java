@@ -4,8 +4,8 @@ package app.base;
 public class Player extends Tank{
     private static final long serialVersionUID = 100001L;
     private String playerId;
-    private double originX;
-    private double originY;
+    //private double originX;
+    //private double originY;
     private PlayerState state = PlayerState.INIT;
     public void setState(PlayerState state){
         this.state = state;
@@ -17,17 +17,18 @@ public class Player extends Tank{
     public String getPlayerId() {
         return playerId;
     }
-
+/*
     public void resetPos(){
         setPos(originX,originY);
     }
-    public Player(World world,String id,double originX,double originY,double maxHP,double attackValue,double defenseValue){
+ */
+    public Player(World world,String id,double x,double y,double maxHP,double attackValue,double defenseValue){
         super(world,maxHP,attackValue,defenseValue);
         this.playerId = id;
-        this.originX = originX;
-        this.originY = originY;
+        //this.originX = originX;
+        //this.originY = originY;
         setDirection(Direction.UP);
-        setPos(originX,originY);
+        setPos(x,y);
         this.online = true;
         setColor();
     }

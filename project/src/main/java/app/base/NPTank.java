@@ -21,6 +21,7 @@ public class NPTank extends Tank implements Runnable{
                 e.printStackTrace();
             }
         }
+        System.out.println("dead");
     }
     private void step(){
         Direction direction = getDirection();
@@ -50,23 +51,6 @@ public class NPTank extends Tank implements Runnable{
                 setDirection(Direction.RIGHT);
                 break;
             default:
-                break;
-        }
-    }
-    private void move(int distance){
-        distance = Math.abs(distance);
-        switch (getDirection()){
-            case LEFT:
-                moveBy(-distance,0);
-                break;
-            case UP:
-                moveBy(0,-distance);
-                break;
-            case DOWN:
-                moveBy(0,distance);
-                break;
-            case RIGHT:
-                moveBy(distance,0);
                 break;
         }
     }
