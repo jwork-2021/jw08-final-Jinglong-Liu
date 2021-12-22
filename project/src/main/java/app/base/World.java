@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 233L;
@@ -107,5 +108,10 @@ public class World implements SendAble {
     public void removePlayer(Player player){
         things.remove(player);
         players.remove(player);
+    }
+    public int countThing(Class<? extends Thing>cls){
+        return things().stream().
+                filter(thing->thing.getClass() == cls)
+                .collect(Collectors.toList()).size();
     }
 }

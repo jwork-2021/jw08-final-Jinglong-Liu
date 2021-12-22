@@ -96,8 +96,11 @@ public class Handler {
                 if(type.equals("already")){
                     UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
                 }
-                else{
+                else if(type.equals("limit")){
                     UIHelper.prompt("提示","当前游戏已满员，请稍后再来");
+                }
+                else if(type.equals("fail")){
+                    UIHelper.prompt("你输啦","你已经出局。当前游戏尚未结束，请稍后再来。");
                 }
             }
             else if(o instanceof Handler.StateRequest){

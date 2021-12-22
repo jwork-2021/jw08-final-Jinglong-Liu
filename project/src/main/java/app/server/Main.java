@@ -1,5 +1,6 @@
 package app.server;
 
+import app.base.NPTank;
 import app.base.Player;
 import app.base.World;
 import app.server.game.Factory;
@@ -15,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Main{
@@ -72,7 +74,6 @@ public class Main{
                     game.setWorld(Factory.loadWorld("world"));
 
                     UIHelper.prompt("提示","地图已加载");
-                    System.out.println(game.world.getPlayers().size());
                     serverScene.loadButton.setText("重置地图");
                 }
                 else{
@@ -92,11 +93,26 @@ public class Main{
                 UIHelper.prompt("提示","保存地图成功");
             }
         });
+
+        serverScene.npcButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(serverScene.npcButton.getText().equals("开始加入npc"))
+                {
+                    npcThread = new AddNPCThread();
+                    npcThread.start();
+                    serverScene.npcButton.setText("停止加入npc");
+                }
+                else{
+                    npcThread.interrupt();
+                    serverScene.npcButton.setText("开始加入npc");
+                }
+            }
+        });
     }
     private Server server;
     private Game game;
     private Handler handler;
-    //private World world;
     private World getWorld(){
         return game.getWorld();
     }
@@ -129,4 +145,24 @@ public class Main{
     private void disconnect(){
 
     }
+    class AddNPCThread extends Thread{
+        @Override
+        public void run() {
+            while(!Thread.currentThread().interrupted()){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(5000);
+                }
+                catch (InterruptedException e){
+                    break;
+                }
+                if(game.getWorld().countThing(NPTank.class) >= 5){
+                    continue;
+                }
+                else{
+                    game.addNPC();
+                }
+            }
+        }
+    }
+    private AddNPCThread npcThread = new AddNPCThread();
 }

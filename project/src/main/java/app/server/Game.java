@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class Game {
     private int limit;
-    public World world;
+    private World world;
     public Game(World world,int number){
         this.world = world;
         this.limit = number;
@@ -34,15 +34,16 @@ public class Game {
 
     public void restart(){
         world.restart();
-
     }
     public Player getPlayer(String playerId) {
         return world.getPlayer(playerId);
     }
-    public Player getTheOtherPlayer(String playerId){
-        return world.getOtherPlayer(playerId);
-    }
+
     public void saveWorld(){
         SaveUtil.saveWorld(world,"world");
+    }
+
+    public void addNPC(){
+        Factory.createNPTank(world);
     }
 }

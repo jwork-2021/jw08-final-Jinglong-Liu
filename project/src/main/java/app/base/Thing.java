@@ -75,7 +75,6 @@ public class Thing implements SendAble {
 
     public void setImage(String filename) {
         this.imageFile = filename;
-        System.out.println(filename);
         Image image = new Image(getClass().getClassLoader().getResourceAsStream(imageFile));
         height = image.getHeight();
         width = image.getWidth();

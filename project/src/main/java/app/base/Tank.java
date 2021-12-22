@@ -14,6 +14,10 @@ public class Tank extends Thing{
         this.setImage();
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     @Override
     public void moveBy(double dx, double dy) {
         double targetX = getX() + dx;
@@ -50,7 +54,9 @@ public class Tank extends Thing{
                 break;
         }
     }
-
+    protected void shoot(){
+        System.out.println("shoot");
+    }
     /**
      * set white color
      */

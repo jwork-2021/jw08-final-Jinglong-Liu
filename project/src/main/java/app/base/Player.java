@@ -51,7 +51,6 @@ public class Player extends Tank{
     }
     public void setColor(){
         int hp = (int)getHp();
-        System.out.println(hp + " set color");
         switch (hp){
             case 1:
                 setWhite();

@@ -31,7 +31,7 @@ public class ServerScene {
     public Button resetButton = new Button("更改人数");
     public Button saveButton = new Button("保存进度");
     public Button listenButton = new Button("启动服务");
-
+    public Button npcButton = new Button("开始加入npc");
 
 
     public ServerScene(){
@@ -69,6 +69,8 @@ public class ServerScene {
         hBox3.setAlignment(Pos.CENTER);
         vBox.getChildren().addAll(hbox,new Label(),hBox1,new Label(),hBox2,new Label(),hBox3
                 );
+        vBox.getChildren().addAll(new Label(),npcButton);
+
         vBox.setAlignment(Pos.CENTER);
         root.setCenter(vBox);
         Scene scn = new Scene(root, 400, 400);
