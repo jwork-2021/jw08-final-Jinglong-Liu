@@ -29,11 +29,13 @@
         </pluginManagement>
 
         <plugins>
+            <!-- client -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.5</version>
                 <configuration>
+                    <finalName>client</finalName>
                     <archive>
                         <manifest>
                             <mainClass>app.client.App</mainClass>
@@ -43,7 +45,6 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <finalName>client</finalName>
                 </configuration>
                 <!-- single   -->
                 <executions>
@@ -56,22 +57,22 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <!-- server -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.5</version>
                 <configuration>
+                    <finalName>server</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>app.server.ServerApp</mainClass>
+                            <mainClass>app.server.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <finalName>server</finalName>
                 </configuration>
                 <!-- single   -->
                 <executions>
