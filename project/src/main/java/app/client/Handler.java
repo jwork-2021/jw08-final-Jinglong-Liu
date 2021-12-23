@@ -52,13 +52,8 @@ public class Handler {
                 try {
                     o = (SendAble) ByteUtil.getObject(byteBuffer);
                 } catch (ClassNotFoundException | IOException e) {
-                    e.printStackTrace();
+                    return;
                 }
-            }
-            try {
-                System.out.println(ByteUtil.getByteBuffer(o).remaining());
-            } catch (IOException e) {
-                e.printStackTrace();
             }
             if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
@@ -66,9 +61,6 @@ public class Handler {
                     game.play();
                     game.setPlayer((Player) o);
                     new Handler.StateRequest().start();
-                }
-                else{
-                    System.out.println("玩家 " + id + " 登录成功");
                 }
             }
             else if(o instanceof GameResult){

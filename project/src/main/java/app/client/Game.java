@@ -141,9 +141,11 @@ public class Game {
         screen = new PlayScreen(client);
         scene = ((PlayScreen) screen).playScene();
         graphicsContext = ((PlayScreen) screen).getGraphicsContext();
+        System.out.println(Thread.currentThread().getName());
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                System.out.println(Thread.currentThread().getName());
                 stage.setScene(scene);
                 stage.setTitle(playerId);
                 frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
@@ -193,9 +195,12 @@ public class Game {
         }
     }
     public void addMessage(String message){
+        /*
         if(!(screen instanceof PlayScreen)){
 
         }
         ((PlayScreen) screen).textArea.appendText(message + "\n");
+        */
+        return;
     }
 }

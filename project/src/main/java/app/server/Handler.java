@@ -135,8 +135,6 @@ public class Handler{
             SaveUtil.saveWorld(game.getWorld(),"world");
             broadcast(new MessageResponse(id + " 离线"));
         }
-
-        //saveWorld();
     }
     public void saveWorld(){
         game.saveWorld();
@@ -177,9 +175,10 @@ public class Handler{
             String id = o.getId();
             //登录成功，发回player.
             if(game.getWorld().getState() == 2){
-                game.restart();
+                game.setWorld(new World());
                 System.out.println("reset");
                 handle(channel,buffer);
+                return;
             }
             Player player = game.getPlayer(id);
             if(player!= null){
@@ -221,9 +220,9 @@ public class Handler{
             try {
                 System.out.println("用户 " + id +  " 登录成功");
                 channel.write(ByteUtil.getByteBuffer(player));
-                for(Queue queue:channelQueueHashMap.values()){
-                    queue.offer(ByteUtil.getByteBuffer(new MessageResponse("用户 " + id + "登录成功")));
-                }
+                //for(Queue queue:channelQueueHashMap.values()){
+                //    queue.offer(ByteUtil.getByteBuffer(new MessageResponse("用户 " + id + "登录成功")));
+                //}
             } catch (Exception e) {
                 e.printStackTrace();
             }
