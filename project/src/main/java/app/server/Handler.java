@@ -70,6 +70,7 @@ public class Handler{
             else if(o instanceof KeyCodeRequest){
                 String id = ((KeyCodeRequest) o).getPlayerId();
                 KeyCode keyCode = ((KeyCodeRequest) o).getKeyCode();
+                //System.out.println(keyCode);
                 Player player = game.getPlayer(id);
                 switch (keyCode){
                     case W:

@@ -33,7 +33,6 @@ public class ServerScene {
     public Button listenButton = new Button("启动服务");
     public Button npcButton = new Button("开始加入npc");
 
-
     public ServerScene(){
         limit.setValue(2);
     }

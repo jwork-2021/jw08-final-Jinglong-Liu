@@ -3,8 +3,10 @@ package app.server;
 import app.base.NPTank;
 import app.base.Player;
 import app.base.World;
+import app.base.request.DisConnectResponse;
 import app.server.game.Factory;
 import app.server.ui.ServerScene;
+import app.util.ByteUtil;
 import app.util.SaveUtil;
 import app.util.UIHelper;
 import javafx.application.Platform;
@@ -15,6 +17,8 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.io.IOException;
+import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -32,6 +36,13 @@ public class Main{
             public void handle(WindowEvent event) {
                 //saveWorld();
                 System.out.println("服务器已断开");
+                for(SocketChannel sc:handler.channelQueueHashMap.keySet()){
+                    try {
+                        sc.write(ByteUtil.getByteBuffer(new DisConnectResponse()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 disconnect();
                 System.exit(0);
             }

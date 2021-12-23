@@ -2,6 +2,7 @@ package app.client;
 
 import app.base.*;
 import app.base.request.*;
+import app.util.ThreadPoolUtil;
 import app.util.UIHelper;
 import app.util.ByteUtil;
 
@@ -26,11 +27,10 @@ public class Handler {
         this.game = game;
     }
     public void handle(ByteBuffer buffer){
-        new RecvHandler(buffer).start();
+        //new RecvHandler(buffer).start();
+        ThreadPoolUtil.execute(new RecvHandler(buffer));
     }
-    public void handle(Object o){
-        new RecvHandler(o).run();
-    }
+
 
     public void connect(){
         System.out.println("连接成功");
@@ -42,18 +42,18 @@ public class Handler {
         RecvHandler(ByteBuffer buffer){
             this.byteBuffer = buffer;
         }
-        RecvHandler(Object o){
-            this.o = (SendAble) o;
-        }
         @Override
         public void run() {
+            try {
+                o = (SendAble) ByteUtil.getObject(byteBuffer);
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
 
-            if(o == null){
-                try {
-                    o = (SendAble) ByteUtil.getObject(byteBuffer);
-                } catch (ClassNotFoundException | IOException e) {
-                    return;
-                }
+            try {
+                System.out.println(ByteUtil.getBytes(o).length);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
@@ -63,6 +63,7 @@ public class Handler {
                     new Handler.StateRequest().start();
                 }
             }
+
             else if(o instanceof GameResult){
                 String state = ((GameResult) o).get(game.playerId);
                 if("win".equals(state)){
@@ -74,11 +75,11 @@ public class Handler {
             }
             else if(o instanceof World){
                 //System.out.println(((World) o).getPlayers().size());
-                game.getWorld().setThings(((World) o).getThings());
+                //game.getWorld().setThings(((World) o).getThings());
                 //((World) o).render(game.getGraphicsContext());
                 //game.getWorld().setPlayers(((World) o).getPlayers());
                 game.player = ((World) o).getPlayer(game.playerId);
-
+                game.getWorld().setWorld((World) o);
                 if(game.player.getHp() <= 0){
                     System.out.println("你输啦.");
                     game.lose();
@@ -109,6 +110,9 @@ public class Handler {
             else if(o instanceof MessageResponse){
                 String message = ((MessageResponse) o).getMessage();
                 game.addMessage(message);
+            }
+            else if(o instanceof DisConnectResponse){
+                UIHelper.prompt("断线","服务器已断开，请退出重连");
             }
         }
     }

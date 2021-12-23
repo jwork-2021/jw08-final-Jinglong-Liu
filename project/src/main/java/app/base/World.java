@@ -4,6 +4,8 @@ import app.base.request.SendAble;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,15 +15,16 @@ import java.util.stream.Collectors;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 233L;
-    public static int WIDTH = 460;
-    public static int HEIGHT = 460;
+    public static int WIDTH = 600;
+    public static int HEIGHT = 600;
     private int state = 0;
     public World(){
         restart();
     }
     //private HashMap<String,Player>players;//error.
     private List<Player> players;
-
+    private List<Thing> grasses;
+    //private List<Thing>stables;
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
@@ -39,8 +42,14 @@ public class World implements SendAble {
     }
 
     public void restart(){
+        //stables = new CopyOnWriteArrayList<>();
         things = new CopyOnWriteArrayList<>();
         players = new CopyOnWriteArrayList<>();
+        grasses = new ArrayList<>();
+        //initBricks(brickPos);
+        //initBricks(grassPos);
+        addThings(brickPos,Brick.class,1,0,0);
+        addThings(grassPos,Grass.class,1,0,1000);
         state = 0;
     }
     private List<Thing> things;
@@ -49,6 +58,9 @@ public class World implements SendAble {
     }
     public void add(Thing thing){
         things.add(thing);
+        if(thing instanceof Grass){
+            grasses.add(thing);
+        }
     }
     public void remove(Thing thing){
         things.remove(thing);
@@ -60,20 +72,29 @@ public class World implements SendAble {
 
     public void render(GraphicsContext gc){
         gc.clearRect(0, 0, WIDTH,HEIGHT);
-        synchronized (things){
-            for(Thing thing:things){
+        for(Thing thing:things){
+            if(!(thing instanceof Grass)) {
                 thing.render(gc);
             }
         }
-    }
-    public void setThings(List<Thing> things) {
-        synchronized (things){
-            this.things = things;
+        for(Thing thing:grasses){
+            thing.render(gc);
         }
     }
-
+    //public void setThings(List<Thing> things) {
+    //    this.things = things;
+    //}
+    public void setWorld(World world){
+        this.things = world.things;
+        this.grasses = world.grasses;
+        this.players = world.players;
+    }
     public List<Thing> getThings() {
         return things;
+    }
+    public List<Thing>collideThings(Thing thing,double targetX,double targetY){
+        List<Thing>result = new ArrayList<>();
+        return things.stream().filter(o -> thing.intersects(o) && thing!=o).collect(Collectors.toList());
     }
     public Thing collideThing(Thing thing,double targetX,double targetY){
         for(Thing other:getThings()){
@@ -125,5 +146,54 @@ public class World implements SendAble {
         return players.stream().filter(player -> player.isOnline())
                 .collect(Collectors.toList()).size();
     }
-
+    public void initBricks(int [][] pos){
+        for (int[] chunk: pos) {
+            int x = chunk[0];
+            int y = chunk[1];
+            int chunkWidth = chunk[2];
+            int chunkHeight = chunk[3];
+            for (int p = x; p <= x + chunkWidth - 20; p += 20) {
+                for (int q = y; q <= y + chunkHeight - 20; q += 20) {
+                    Brick brick = new Brick(this);
+                    brick.setPos(p,q);
+                    things.add(brick);
+                }
+            }
+        }
+    }
+    public void addThings(int [][]pos,Class<? extends Thing>cls,double maxHP,double attackValue,double defenseValue){
+        try {
+            Constructor c = cls.getConstructor(World.class, double.class, double.class, double.class);
+            for (int[] chunk : pos) {
+                int x = chunk[0];
+                int y = chunk[1];
+                int chunkWidth = chunk[2];
+                int chunkHeight = chunk[3];
+                for (int p = x; p <= x + chunkWidth - 20; p += 20) {
+                    for (int q = y; q <= y + chunkHeight - 20; q += 20) {
+                        Thing thing = (Thing) c.newInstance(this, maxHP, attackValue, defenseValue);
+                        thing.setPos(p, q);
+                        this.add(thing);
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    //x y width height
+    private static final int[][] brickPos =
+            {
+                    {WIDTH/2-WIDTH/24, HEIGHT/2-HEIGHT/6, WIDTH/12, HEIGHT/3},
+                    {WIDTH/4-WIDTH/24, HEIGHT/2-HEIGHT/6, WIDTH/12, HEIGHT/3},
+                    {WIDTH/4*3-WIDTH/24, HEIGHT/2-HEIGHT/6, WIDTH/12, HEIGHT/3}
+            };
+    private static final int[][] waterPos = {
+            {}
+    };
+    private static final int[][] grassPos = {
+            {WIDTH/2+WIDTH/24 + (WIDTH/4-WIDTH/12)/4,HEIGHT/2-HEIGHT/12 ,(WIDTH/4-WIDTH/12)/2, HEIGHT/6},
+            {WIDTH/4+WIDTH/24 + (WIDTH/4-WIDTH/12)/4,HEIGHT/2-HEIGHT/12 ,(WIDTH/4-WIDTH/12)/2, HEIGHT/6}
+    };
 }

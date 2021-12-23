@@ -1,6 +1,8 @@
 package app.base;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Bullet extends Thing implements Runnable{
     private static final long serialVersionUID = 100L;
@@ -32,12 +34,17 @@ public class Bullet extends Thing implements Runnable{
             setHp(0);
         }
         else{
-            Thing other = world.collideThing(this,targetX,targetY);
-            if(other!= null){
-                attack(other);
+
+
+            List<Thing>collides = world.collideThings(this,targetX,targetY).
+                    stream().filter(o -> o instanceof Grass == false)
+                    .collect(Collectors.toList());
+            System.out.println(collides.size());
+            if(collides.isEmpty()){
+                setPos(targetX,targetY);
             }
             else{
-                setPos(targetX,targetY);
+                collides.forEach(o->attack(o));
             }
         }
     }
@@ -55,7 +62,7 @@ public class Bullet extends Thing implements Runnable{
         super(world,maxHp,attackValue,defenseValue);
     }
 
-
+    @Override
     public void setImage(){
         switch (getDirection()){
             case UP:

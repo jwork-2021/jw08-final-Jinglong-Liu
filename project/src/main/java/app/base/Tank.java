@@ -27,7 +27,7 @@ public class Tank extends Thing{
         }
         else{
             Thing other = world.collideThing(this,targetX,targetY);
-            if(other!= null){
+            if(other!= null && !(other instanceof Grass)){
                 attack(other);
             }
             else{

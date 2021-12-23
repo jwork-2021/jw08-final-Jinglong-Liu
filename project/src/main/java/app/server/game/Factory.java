@@ -77,4 +77,8 @@ public class Factory {
     public static World emptyWorld(){
         return new World();
     }
+    public static World getWorldMap(){
+        World world = new World();
+        return world;
+    }
 }

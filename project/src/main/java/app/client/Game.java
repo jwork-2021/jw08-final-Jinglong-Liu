@@ -6,6 +6,7 @@ import app.base.Player;
 import app.base.World;
 import app.base.request.MessageRequest;
 import app.client.ui.screen.*;
+import app.util.UIHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -31,7 +32,7 @@ public class Game {
     private Stage stage;
     private Screen screen;
     private World world;
-    private static final int FRAMES_PER_SECOND = 60;
+    private static final int FRAMES_PER_SECOND = 30;
     private static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     private static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     String playerId;
@@ -122,7 +123,6 @@ public class Game {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                //更新JavaFX的主线程的代码放在此处
                 ((RestartScreen) screen).connectButton.setText("连接成功");
                 ((RestartScreen) screen).connectButton.setDisable(true);
             }
@@ -176,7 +176,6 @@ public class Game {
     }
     public void win(){
         this.state = State.WIN;
-
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -190,9 +189,9 @@ public class Game {
     }
     private void keyPress(KeyCode keyCode){
         KeyCodeRequest r = new KeyCodeRequest(playerId,keyCode);
-        if(this.state == State.PLAY){
-            client.send(r);
-        }
+        //if(this.state == State.PLAY){
+        client.send(r);
+        //}
     }
     public void addMessage(String message){
         /*
