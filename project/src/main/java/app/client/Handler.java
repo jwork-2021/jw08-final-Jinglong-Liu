@@ -111,9 +111,6 @@ public class Handler {
                 String message = ((MessageResponse) o).getMessage();
                 game.addMessage(message);
             }
-            else if(o instanceof DisConnectResponse){
-                UIHelper.prompt("断线","服务器已断开，请退出重连");
-            }
         }
     }
 

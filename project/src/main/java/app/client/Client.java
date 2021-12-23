@@ -2,6 +2,7 @@ package app.client;
 
 import app.base.request.SendAble;
 import app.util.ByteUtil;
+import app.util.UIHelper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -53,18 +54,19 @@ public class Client extends Thread {
     @Override
     public void run() {
         ByteBuffer readBuffer = ByteBuffer.allocate(16384);
-        try{
-            connect(host,port);
-            while(true){
+        try {
+            connect(host, port);
+            while (sc.isConnected()) {
                 readBuffer.clear();
                 sc.read(readBuffer);
-                if(readBuffer.hasRemaining()){
+                if (readBuffer.hasRemaining()) {
                     handler.handle(readBuffer);
                 }
             }
+            System.out.println("dddd");
         } catch (IOException e) {
             //e.printStackTrace();
-            return;
+            UIHelper.prompt("断线", "服务器已断开，请退出重登");
         }
     }
     public void send(SendAble o){
