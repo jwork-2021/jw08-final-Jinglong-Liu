@@ -6,15 +6,13 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 public class World implements SendAble {
-    private static final long serialVersionUID = 233L;
+    private static final long serialVersionUID = 2L;
     public static int WIDTH = 600;
     public static int HEIGHT = 600;
     private int state = 0;
@@ -22,14 +20,18 @@ public class World implements SendAble {
         restart();
     }
     //private HashMap<String,Player>players;//error.
-    private List<Player> players;
+    private Set<Player> players;
     private List<Thing> grasses;
-    //private List<Thing>stables;
-    public void setPlayers(List<Player> players) {
+
+    public List<Thing> getGrasses() {
+        return grasses;
+    }
+
+    public void setPlayers(Set<Player> players) {
         this.players = players;
     }
 
-    public List<Player> getPlayers() {
+    public Set<Player> getPlayers() {
         return players;
     }
 
@@ -44,7 +46,7 @@ public class World implements SendAble {
     public void restart(){
         //stables = new CopyOnWriteArrayList<>();
         things = new CopyOnWriteArrayList<>();
-        players = new CopyOnWriteArrayList<>();
+        players = new CopyOnWriteArraySet<>();
         grasses = new ArrayList<>();
         //initBricks(brickPos);
         //initBricks(grassPos);
@@ -60,6 +62,9 @@ public class World implements SendAble {
         things.add(thing);
         if(thing instanceof Grass){
             grasses.add(thing);
+        }
+        else if(thing instanceof Player && !players.contains(thing)){
+            players.add((Player) thing);
         }
     }
     public void remove(Thing thing){
@@ -93,7 +98,6 @@ public class World implements SendAble {
         return things;
     }
     public List<Thing>collideThings(Thing thing,double targetX,double targetY){
-        List<Thing>result = new ArrayList<>();
         return things.stream().filter(o -> thing.intersects(o) && thing!=o).collect(Collectors.toList());
     }
     public Thing collideThing(Thing thing,double targetX,double targetY){
@@ -119,14 +123,6 @@ public class World implements SendAble {
         }
         return null;
     }
-    public Player getOtherPlayer(String id){
-        for(Player player:players){
-            if(!id.equals(player.getPlayerId())){
-                return player;
-            }
-        }
-        return null;
-    }
 
     public void removePlayer(Player player){
         things.remove(player);
@@ -145,21 +141,6 @@ public class World implements SendAble {
     public int onlinePlayerCount(){
         return players.stream().filter(player -> player.isOnline())
                 .collect(Collectors.toList()).size();
-    }
-    public void initBricks(int [][] pos){
-        for (int[] chunk: pos) {
-            int x = chunk[0];
-            int y = chunk[1];
-            int chunkWidth = chunk[2];
-            int chunkHeight = chunk[3];
-            for (int p = x; p <= x + chunkWidth - 20; p += 20) {
-                for (int q = y; q <= y + chunkHeight - 20; q += 20) {
-                    Brick brick = new Brick(this);
-                    brick.setPos(p,q);
-                    things.add(brick);
-                }
-            }
-        }
     }
     public void addThings(int [][]pos,Class<? extends Thing>cls,double maxHP,double attackValue,double defenseValue){
         try {
@@ -181,6 +162,12 @@ public class World implements SendAble {
         catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public void clear(){
+        things.clear();
+        players.clear();
+        grasses.clear();
+        state = 0;
     }
     //x y width height
     private static final int[][] brickPos =

@@ -22,7 +22,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class ServerScene {
+public class ServerScreen {
     //private Stage stage;
     public ChoiceBox limit = new ChoiceBox(FXCollections.observableArrayList(
             2, 3,4,5,6));
@@ -33,7 +33,7 @@ public class ServerScene {
     public Button listenButton = new Button("启动服务");
     public Button npcButton = new Button("开始加入npc");
 
-    public ServerScene(){
+    public ServerScreen(){
         limit.setValue(2);
     }
     public Scene scene(){

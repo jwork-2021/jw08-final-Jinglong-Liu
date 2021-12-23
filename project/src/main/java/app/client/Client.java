@@ -33,6 +33,7 @@ public class Client extends Thread {
     }
 
     private Handler handler;
+    public static int BUFFER_SIZE = 16383;
     public void setHandler(Handler handler) {
         this.handler = handler;
         handler.setClient(this);
@@ -53,7 +54,7 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        ByteBuffer readBuffer = ByteBuffer.allocate(16384);
+        ByteBuffer readBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         try {
             connect(host, port);
             while (sc.isConnected()) {
@@ -63,7 +64,6 @@ public class Client extends Thread {
                     handler.handle(readBuffer);
                 }
             }
-            System.out.println("dddd");
         } catch (IOException e) {
             //e.printStackTrace();
             UIHelper.prompt("断线", "服务器已断开，请退出重登");

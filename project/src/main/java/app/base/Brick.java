@@ -1,7 +1,7 @@
 package app.base;
 
 public class Brick extends Thing{
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 21L;
 
     public Brick(World world, double maxHP, double attackValue, double defenseValue) {
         super(world, maxHP, attackValue, defenseValue);

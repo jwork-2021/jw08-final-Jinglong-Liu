@@ -1,7 +1,7 @@
 package app.base.request;
 
 public class MessageRequest implements SendAble{
-    private static final long serialVersionUID = 111116L;
+    private static final long serialVersionUID = 1002L;
     private String message;
     public MessageRequest(String messageToSend){
         this.message = messageToSend;

@@ -20,14 +20,17 @@ public class Server extends Thread{
     private ServerSocketChannel ssc;
     private Selector selector;
 
-    //volatile HashMap<SocketChannel,Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
-    //public Game game;
-    public Handler handler;
+    private Handler handler;
 
     private int port = 8090;
     private int playerNumber = 2;
     public Server(int port){
         port = port;
+        try {
+            selector = Selector.open();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setPort(int port) {
@@ -40,7 +43,6 @@ public class Server extends Thread{
     private void bind() throws IOException{
         ssc = ServerSocketChannel.open();
         ssc.bind(new InetSocketAddress(port));
-        selector = Selector.open();
         ssc.configureBlocking(false);
         ssc.register(selector, SelectionKey.OP_ACCEPT);
         System.out.println("服务器已启动，端口:" + port);
@@ -83,8 +85,6 @@ public class Server extends Thread{
                         handler.handleOffline(sc);
 
                         sc.close();
-                        //handler.channelQueueHashMap.remove(sc);
-                        //handler.saveWorld();
                         it.remove();
                         continue;
                     }

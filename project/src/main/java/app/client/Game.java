@@ -83,7 +83,6 @@ public class Game {
     }
 
     public void restart(RestartScreen rScreen){
-        //screen = new RestartScreen();
         world.restart();
 
         screen = rScreen;
@@ -156,31 +155,22 @@ public class Game {
                 scene.setOnKeyPressed(e->keyPress(e.getCode()));
             }
         });
-        ((PlayScreen) screen).button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                handler.getClient().send(new MessageRequest(
-                        playerId + ":"+((PlayScreen) screen).textField.getText()));
-                ((PlayScreen) screen).textField.clear();
-            }
+        ((PlayScreen) screen).button.setOnAction((e)->{
+            handler.getClient().send(new MessageRequest(
+                    playerId + ":" +((PlayScreen) screen).textField.getText()));
+            ((PlayScreen) screen).textField.clear();
         });
     }
     public void lose(){
         this.state = State.LOSE;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                restart(new LoseScreen());
-            }
+        Platform.runLater(()->{
+            restart(new LoseScreen());
         });
     }
     public void win(){
         this.state = State.WIN;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                restart(new WinScreen());
-            }
+        Platform.runLater(()->{
+            restart(new WinScreen());
         });
     }
 

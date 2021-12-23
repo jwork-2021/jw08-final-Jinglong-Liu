@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class NPTank extends Tank implements Runnable{
-    private static final long serialVersionUID = 100002L;
+    private static final long serialVersionUID = 5L;
     public NPTank(World world, double maxHP, double attackValue, double defenseValue) {
         super(world, maxHP, attackValue, defenseValue);
     }
@@ -21,7 +21,6 @@ public class NPTank extends Tank implements Runnable{
                 e.printStackTrace();
             }
         }
-        System.out.println("dead");
     }
     private void step(){
         Direction direction = getDirection();

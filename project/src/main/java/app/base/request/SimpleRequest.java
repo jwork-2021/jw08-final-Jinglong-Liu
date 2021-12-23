@@ -1,7 +1,7 @@
 package app.base.request;
 
 public class SimpleRequest implements SendAble{
-    private static final long serialVersionUID = 10L;
+    private static final long serialVersionUID = 998L;
     private String request;
     public SimpleRequest(String request){
         this.request = request;

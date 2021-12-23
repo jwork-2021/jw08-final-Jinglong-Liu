@@ -44,17 +44,13 @@ public class Handler {
         }
         @Override
         public void run() {
-            try {
-                o = (SendAble) ByteUtil.getObject(byteBuffer);
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
+
+            o = (SendAble) ByteUtil.getObject(byteBuffer);
+            int size = ByteUtil.getBytes(o).length;
+            if(size > Client.BUFFER_SIZE/4 * 3){
+                Client.BUFFER_SIZE <<= 1;
             }
 
-            try {
-                System.out.println(ByteUtil.getBytes(o).length);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             if(o instanceof Player){
                 String id = ((Player) o).getPlayerId();
                 if(id.equals(game.playerId)){
@@ -65,6 +61,7 @@ public class Handler {
             }
 
             else if(o instanceof GameResult){
+
                 String state = ((GameResult) o).get(game.playerId);
                 if("win".equals(state)){
                     game.win();
@@ -74,10 +71,6 @@ public class Handler {
                 }
             }
             else if(o instanceof World){
-                //System.out.println(((World) o).getPlayers().size());
-                //game.getWorld().setThings(((World) o).getThings());
-                //((World) o).render(game.getGraphicsContext());
-                //game.getWorld().setPlayers(((World) o).getPlayers());
                 game.player = ((World) o).getPlayer(game.playerId);
                 game.getWorld().setWorld((World) o);
                 if(game.player.getHp() <= 0){

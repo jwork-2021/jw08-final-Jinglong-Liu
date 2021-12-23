@@ -2,7 +2,7 @@ package app.base;
 
 
 public class Player extends Tank{
-    private static final long serialVersionUID = 100001L;
+    private static final long serialVersionUID = 4L;
     private String playerId;
     //private double originX;
     //private double originY;

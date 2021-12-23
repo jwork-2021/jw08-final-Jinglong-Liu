@@ -22,12 +22,13 @@ public class Factory {
         world.add(player);
         return player;
     }
-    public static void createNPTank(World world){
+    public static NPTank createNPTank(World world){
         NPTank npc = new NPTank(world,2,2,1);
         npc.setWhite();
         addTank(world,npc);
         //new Thread(npc).start();
-        ThreadPoolUtil.execute(npc);
+        //ThreadPoolUtil.execute(npc);
+        return npc;
     }
     public static void createBullet(World world,Tank owner){
         Bullet bullet = new Bullet(world,1,owner.getAttackValue(),0);
@@ -75,7 +76,9 @@ public class Factory {
         return FetchUtil.fetchWorld(fileName);
     }
     public static World emptyWorld(){
-        return new World();
+        World world = new World();
+        world.clear();
+        return world;
     }
     public static World getWorldMap(){
         World world = new World();

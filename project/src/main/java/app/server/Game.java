@@ -1,10 +1,12 @@
 package app.server;
 
+import app.base.NPTank;
 import app.base.Player;
 import app.base.request.SendAble;
 import app.base.World;
 import app.server.game.Factory;
 import app.util.SaveUtil;
+import app.util.ThreadPoolUtil;
 
 import java.util.HashMap;
 
@@ -44,6 +46,7 @@ public class Game {
     }
 
     public void addNPC(){
-        Factory.createNPTank(world);
+        NPTank npc = Factory.createNPTank(world);
+        ThreadPoolUtil.execute(npc);
     }
 }

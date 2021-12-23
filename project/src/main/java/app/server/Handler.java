@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Handler{
     public Game game;
@@ -51,11 +52,9 @@ public class Handler{
         }
         private void handle(SocketChannel channel,ByteBuffer buffer){
             SendAble o = null;
-            try {
-                o = (SendAble) ByteUtil.getObject(buffer);
-            } catch (ClassNotFoundException  | IOException e) {
-                e.printStackTrace();
-            }
+
+            o = (SendAble) ByteUtil.getObject(buffer);
+
 
             if(o instanceof LoginRequest){
                 handleLoginRequest(channel, (LoginRequest) o,buffer);
@@ -115,12 +114,15 @@ public class Handler{
         //        && game.getTheOtherPlayer(id).getHp() <= 0){
         //   return 1;
         //}
-        else if(game.getWorld().getPlayers().size() >= 2 &&
-                game.getWorld().getPlayers().stream()
-                        .filter(player -> player.getHp() > 0 && !player.getPlayerId().equals(id))
-                        .collect(Collectors.toList()).isEmpty()){
+        long c1 = game.getWorld().getPlayers().stream()
+                .filter(player->(!player.getPlayerId().equals(id))).count();
+        long c2 = game.getWorld().getPlayers().stream()
+                .filter(player->(!player.getPlayerId().equals(id)))
+                .filter(player -> player.getHp() > 0).count();
+        if(c1 > 0 && c2 == 0){
             return 2;
         }
+
         return 0;
     }
     public void setGameState(int state){
@@ -177,7 +179,6 @@ public class Handler{
             //登录成功，发回player.
             if(game.getWorld().getState() == 2){
                 game.setWorld(new World());
-                System.out.println("reset");
                 handle(channel,buffer);
                 return;
             }
@@ -192,7 +193,7 @@ public class Handler{
                     }
                     return;
                 }
-                if(player.isOnline()){
+                else if(player.isOnline()){
                     System.out.println(id + "重复登录");
                     try {
                         channel.write(ByteUtil.getByteBuffer(new LoginFailResponse(id,"already")));
@@ -221,9 +222,6 @@ public class Handler{
             try {
                 System.out.println("用户 " + id +  " 登录成功");
                 channel.write(ByteUtil.getByteBuffer(player));
-                //for(Queue queue:channelQueueHashMap.values()){
-                //    queue.offer(ByteUtil.getByteBuffer(new MessageResponse("用户 " + id + "登录成功")));
-                //}
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -231,16 +229,7 @@ public class Handler{
     }
     private void broadcast(SendAble o){
         for(Queue queue:channelQueueHashMap.values()){
-            try {
-                queue.offer(ByteUtil.getByteBuffer(o));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    private void broadcast(ByteBuffer buffer){
-        for(Queue queue:channelQueueHashMap.values()){
-            queue.offer(buffer);
+            queue.offer(ByteUtil.getByteBuffer(o));
         }
     }
 }

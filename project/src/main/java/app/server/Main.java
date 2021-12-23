@@ -3,35 +3,24 @@ package app.server;
 import app.base.NPTank;
 import app.base.World;
 import app.server.game.Factory;
-import app.server.ui.ServerScene;
+import app.server.ui.ServerScreen;
 import app.util.SaveUtil;
 import app.util.UIHelper;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Main{
-    private ServerScene serverScene = new ServerScene();
+    private ServerScreen screen = new ServerScreen();
     Main(Stage stage){
         server = new Server(8090);
         game = new Game(new World(),2);
         handler = new Handler(server,game);
-
-        stage.setScene(serverScene.scene());
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                //saveWorld();
-                System.out.println("服务器已断开");
-                disconnect();
-                System.exit(0);
-            }
+        stage.setScene(screen.scene());
+        stage.setOnCloseRequest((e)->{
+            System.out.println("服务器已断开");
+            disconnectAction();
+            System.exit(0);
         });
         stage.show();
     }
@@ -39,71 +28,43 @@ public class Main{
         registerButton();
     }
     private void registerButton(){
-        serverScene.listenButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                restart();
-                serverScene.listenButton.setDisable(true);
-                //serverScene.number.setDisable(true);
+        screen.listenButton.setOnAction((e)->{
+            screen.listenButton.setDisable(restart());
+        });
+        screen.resetButton.setOnAction((e)->{
+            game.setLimit((int)screen.limit.getValue());
+        });
+        screen.loadButton.setOnAction((e)->{
+            String text = screen.loadButton.getText();
+            int count = game.getWorld().onlinePlayerCount();
+            if(count > 0){
+                UIHelper.prompt("提示","游戏正在进行，不可更改地图");
+                return;
+            }
+            if(text.equals("加载地图")){
+                game.setWorld(Factory.loadWorld("world"));
+                UIHelper.prompt("提示","地图已加载");
+                screen.loadButton.setText("重置地图");
+            }
+            else{
+                screen.loadButton.setText("加载地图");
+                game.setWorld(new World());
+                UIHelper.prompt("提示","地图已重置");
             }
         });
-        serverScene.resetButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                game.setLimit((int)serverScene.limit.getValue());
-            }
+        screen.saveButton.setOnAction((e)->{
+            SaveUtil.saveWorld(getWorld(),"world");
+            UIHelper.prompt("提示","保存地图成功");
         });
-
-        serverScene.loadButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String text = serverScene.loadButton.getText();
-                int count = game.getWorld().getPlayers().stream()
-                        .filter(player -> player.isOnline())
-                        .collect(Collectors.toList()).size();
-
-                if(count > 0){
-                    UIHelper.prompt("提示","游戏正在进行，不可更改地图");
-                    return;
-                }
-
-                if(text.equals("加载地图")){
-                    game.setWorld(Factory.loadWorld("world"));
-
-                    UIHelper.prompt("提示","地图已加载");
-                    serverScene.loadButton.setText("重置地图");
-                }
-                else{
-                    serverScene.loadButton.setText("加载地图");
-                    game.setWorld(Factory.emptyWorld());
-                    //game.setWorld(world);
-
-                    UIHelper.prompt("提示","地图已重置");
-                }
+        screen.npcButton.setOnAction((e)->{
+            if(screen.npcButton.getText().equals("开始加入npc")) {
+                npcThread = new AddNPCThread();
+                npcThread.start();
+                screen.npcButton.setText("停止加入npc");
             }
-        });
-
-        serverScene.saveButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                SaveUtil.saveWorld(getWorld(),"world");
-                UIHelper.prompt("提示","保存地图成功");
-            }
-        });
-
-        serverScene.npcButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(serverScene.npcButton.getText().equals("开始加入npc"))
-                {
-                    npcThread = new AddNPCThread();
-                    npcThread.start();
-                    serverScene.npcButton.setText("停止加入npc");
-                }
-                else{
-                    npcThread.interrupt();
-                    serverScene.npcButton.setText("开始加入npc");
-                }
+            else{
+                npcThread.interrupt();
+                screen.npcButton.setText("开始加入npc");
             }
         });
     }
@@ -113,33 +74,23 @@ public class Main{
     private World getWorld(){
         return game.getWorld();
     }
-    private void restart(){
+    private boolean restart(){
         int number = 2;
         int port = 8090;
         try {
-            number = (int)serverScene.limit.getValue();
-            port = Integer.parseInt(serverScene.port.getText());
+            number = (int)screen.limit.getValue();
+            port = Integer.parseInt(screen.port.getText());
             server.setPort(port);
             game.setLimit(number);
         }
         catch (Exception e){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.titleProperty().set("提醒");
-                    alert.headerTextProperty().set("注意");
-                    alert.setContentText("请输入合法的端口号");
-                    alert.showAndWait();
-                }
-            });
-            return;
+            UIHelper.prompt("提醒","请输入合法的端口号");
+            return false;
         }
-
-        System.out.println("服务器正在启动中，请稍等……");
         server.start();
+        return true;
     }
-    private void disconnect(){
+    private void disconnectAction(){
         game.saveWorld();
     }
     class AddNPCThread extends Thread{
@@ -152,7 +103,7 @@ public class Main{
                 catch (InterruptedException e){
                     break;
                 }
-                if(game.getWorld().countThing(NPTank.class) >= 5){
+                if(game.getWorld().countThing(NPTank.class) >= 3){
                     continue;
                 }
                 else{

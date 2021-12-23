@@ -4,7 +4,7 @@ import app.base.Player;
 import javafx.scene.input.KeyCode;
 
 public class KeyCodeRequest implements SendAble{
-    private static final long serialVersionUID = 111112L;
+    private static final long serialVersionUID = 1005L;
     private KeyCode keyCode;
     private String playerId;
     public KeyCodeRequest(String playerId,KeyCode keyCode){

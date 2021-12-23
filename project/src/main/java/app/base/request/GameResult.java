@@ -2,6 +2,9 @@ package app.base.request;
 
 import java.util.HashMap;
 
+/**
+ *
+ */
 public class GameResult implements SendAble{
     private static final long serialVersionUID = 111111L;
     HashMap<String,String>result;

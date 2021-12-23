@@ -8,16 +8,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class UIHelper {
-    public static void prompt(String title,String text){
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.titleProperty().set(title);
-                alert.headerTextProperty().set("注意");
-                alert.setContentText(text);
-                alert.showAndWait();
-            }
+    public static void prompt(String head,String text){
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.titleProperty().set("注意");
+            alert.headerTextProperty().set(head);
+            alert.setContentText(text);
+            alert.showAndWait();
         });
     }
 }

@@ -6,14 +6,13 @@ import app.util.ThreadPoolUtil;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Tank extends Thing{
-    private static final long serialVersionUID = 100000L;
+public abstract class Tank extends Thing{
+    private static final long serialVersionUID = 3L;
 
     //private Direction direction;
     public Tank(World world,double maxHP,double attackValue,double defenseValue){
         super(world,maxHP,attackValue,defenseValue);
         setWhite();
-        setHp(4);
         setDirection(Direction.UP);
     }
 
@@ -99,20 +98,20 @@ public class Tank extends Thing{
         TANK_LEFT = YELLOW_TANK_LEFT;
         TANK_RIGHT = YELLOW_TANK_RIGHT;
     }
-    protected static final String WHITE_TANK_UP = "white-tank-up.gif";
-    protected static final String WHITE_TANK_DOWN = "white-tank-down.gif";
-    protected static final String WHITE_TANK_LEFT = "white-tank-left.gif";
-    protected static final String WHITE_TANK_RIGHT = "white-tank-right.gif";
-    protected static final String GREEN_TANK_UP = "green-tank-up.gif";
-    protected static final String GREEN_TANK_DOWN = "green-tank-down.gif";
-    protected static final String GREEN_TANK_LEFT = "green-tank-left.gif";
-    protected static final String GREEN_TANK_RIGHT = "green-tank-right.gif";
-    protected static final String RED_TANK_UP = "red-tank-up.gif";
-    protected static final String RED_TANK_DOWN = "red-tank-down.gif";
-    protected static final String RED_TANK_LEFT = "red-tank-left.gif";
-    protected static final String RED_TANK_RIGHT = "red-tank-right.gif";
-    protected static final String YELLOW_TANK_UP = "yellow-tank-up.gif";
-    protected static final String YELLOW_TANK_DOWN = "yellow-tank-down.gif";
-    protected static final String YELLOW_TANK_LEFT = "yellow-tank-left.gif";
-    protected static final String YELLOW_TANK_RIGHT = "yellow-tank-right.gif";
+    public static final String WHITE_TANK_UP = "white-tank-up.gif";
+    public static final String WHITE_TANK_DOWN = "white-tank-down.gif";
+    public static final String WHITE_TANK_LEFT = "white-tank-left.gif";
+    public static final String WHITE_TANK_RIGHT = "white-tank-right.gif";
+    public static final String GREEN_TANK_UP = "green-tank-up.gif";
+    public static final String GREEN_TANK_DOWN = "green-tank-down.gif";
+    public static final String GREEN_TANK_LEFT = "green-tank-left.gif";
+    public static final String GREEN_TANK_RIGHT = "green-tank-right.gif";
+    public static final String RED_TANK_UP = "red-tank-up.gif";
+    public static final String RED_TANK_DOWN = "red-tank-down.gif";
+    public static final String RED_TANK_LEFT = "red-tank-left.gif";
+    public static final String RED_TANK_RIGHT = "red-tank-right.gif";
+    public static final String YELLOW_TANK_UP = "yellow-tank-up.gif";
+    public static final String YELLOW_TANK_DOWN = "yellow-tank-down.gif";
+    public static final String YELLOW_TANK_LEFT = "yellow-tank-left.gif";
+    public static final String YELLOW_TANK_RIGHT = "yellow-tank-right.gif";
 }

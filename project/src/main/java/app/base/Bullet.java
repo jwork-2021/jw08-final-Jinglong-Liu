@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Bullet extends Thing implements Runnable{
-    private static final long serialVersionUID = 100L;
+    private static final long serialVersionUID = 20L;
     private Tank owner;
 
     public void setOwner(Tank owner) {

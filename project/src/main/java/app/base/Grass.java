@@ -1,7 +1,7 @@
 package app.base;
 
 public class Grass extends Thing{
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 22L;
 
     public Grass(World world, double maxHP, double attackValue, double defenseValue) {
         super(world, maxHP, attackValue, defenseValue);
