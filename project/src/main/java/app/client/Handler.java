@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
+import static app.base.request.LoginResponse.*;
+
 public class Handler {
     private app.base.request.StateRequest srq = new app.base.request.StateRequest();
     private Game game;
@@ -44,22 +46,11 @@ public class Handler {
         }
         @Override
         public void run() {
-
             o = (SendAble) ByteUtil.getObject(byteBuffer);
             int size = ByteUtil.getBytes(o).length;
             if(size > Client.BUFFER_SIZE/4 * 3){
                 Client.BUFFER_SIZE <<= 1;
             }
-
-            if(o instanceof Player){
-                String id = ((Player) o).getPlayerId();
-                if(id.equals(game.playerId)){
-                    game.play();
-                    game.setPlayer((Player) o);
-                    new Handler.StateRequest().start();
-                }
-            }
-
             else if(o instanceof GameResult){
 
                 String state = ((GameResult) o).get(game.playerId);
@@ -71,9 +62,10 @@ public class Handler {
                 }
             }
             else if(o instanceof World){
-                game.player = ((World) o).getPlayer(game.playerId);
                 game.getWorld().setWorld((World) o);
-                if(game.player.getHp() <= 0){
+                Player player = ((World) o).getPlayer(game.playerId);
+                if(player == null)return;
+                if(player.getHp() <= 0){
                     System.out.println("你输啦.");
                     game.lose();
                     try {
@@ -82,27 +74,31 @@ public class Handler {
                         e.printStackTrace();
                     }
                 }
-                //System.out.println("bullets " + ((World) o).countThing(Bullet.class));
-                //System.out.println("npc: " + ((World) o).countThing(NPTank.class));
-
             }
-
-            else if(o instanceof LoginFailResponse){
-                String type = ((LoginFailResponse) o).type();
-                String id = ((LoginFailResponse) o).getId();
-                if(type.equals("already")){
-                    UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
+            else if(o instanceof LoginResponse){
+                String id = ((LoginResponse) o).getId();
+                if(!id.equals(game.playerId)){
+                    return;
                 }
-                else if(type.equals("limit")){
-                    UIHelper.prompt("提示","当前游戏已满员，请稍后再来");
+                int type = ((LoginResponse) o).getType();
+                switch (type){
+                    case LOGIN_SUCCEED:
+                        game.play();
+                        new Handler.StateRequest().start();
+                        System.out.println("登陆成功");
+                        break;
+                    case LOGIN_LIMIT:
+                        UIHelper.prompt("提示","当前游戏已满员，请稍后再来");
+                        break;
+                    case LOGIN_ALREADY:
+                        UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
+                        break;
+                    case LOGIN_LOSE:
+                        UIHelper.prompt("你输啦","你已经出局。当前游戏尚未结束，请稍后再来。");
+                        break;
+                    default:
+                        break;
                 }
-                else if(type.equals("fail")){
-                    UIHelper.prompt("你输啦","你已经出局。当前游戏尚未结束，请稍后再来。");
-                }
-            }
-            else if(o instanceof MessageResponse){
-                String message = ((MessageResponse) o).getMessage();
-                game.addMessage(message);
             }
         }
     }

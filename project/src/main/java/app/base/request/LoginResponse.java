@@ -16,4 +16,17 @@ public class LoginResponse implements SendAble{
     public String getId() {
         return id;
     }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public static final int LOGIN_SUCCEED = 0;
+    public static final int LOGIN_LIMIT = 1;
+    public static final int LOGIN_ALREADY = 2;
+    public static final int LOGIN_LOSE = 3;
 }

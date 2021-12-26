@@ -40,7 +40,7 @@ public class Game {
     String playerId;
     private KeyFrame frame;
     private Timeline animation;
-    Player player;
+    //Player player;
 
     public Stage getStage() {
         return stage;
@@ -50,20 +50,19 @@ public class Game {
         return graphicsContext;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
+    //public void setPlayer(Player player) {
+      //  this.player = player;
+    //}
 
-    public Player getPlayer() {
-        return player;
-    }
+    //public Player getPlayer() {
+    //    return player;
+    //}
 
     public Game(Stage stage){
         this.stage = stage;
         //this.client = new Client();
         this.handler = new Handler(this);
-        //handler.setClient(client);
-        //client.setHandler(handler);
+
         this.state = State.INIT;
         this.world = new World();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -94,20 +93,14 @@ public class Game {
         stage.setScene(scene);
         stage.setResizable(false);
 
-        ((RestartScreen) screen).startButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                playRequest(((RestartScreen) screen).choiceBox);
-            }
+        ((RestartScreen) screen).startButton.setOnAction((e)->{
+            playRequest(((RestartScreen) screen).choiceBox);
         });
-        ((RestartScreen) screen).connectButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String host = ((RestartScreen) screen).host.getText();
-                String port = ((RestartScreen) screen).port.getText();
-                SaveUtil.saveConfig(host, Integer.valueOf(port));
-                connectRequest(host,Integer.valueOf(port));
-            }
+        ((RestartScreen) screen).connectButton.setOnAction((e)-> {
+            String host = ((RestartScreen) screen).host.getText();
+            String port = ((RestartScreen) screen).port.getText();
+            SaveUtil.saveConfig(host, Integer.valueOf(port));
+            connectRequest(host,Integer.valueOf(port));
         });
         stage.show();
     }
@@ -127,13 +120,13 @@ public class Game {
             public void run() {
                 ((RestartScreen) screen).connectButton.setText("连接成功");
                 ((RestartScreen) screen).connectButton.setDisable(true);
+                ((RestartScreen) screen).startButton.setDisable(false);
             }
         });
     }
     public void playRequest(ChoiceBox choiceBox){
         String player = choiceBox.getValue().toString();
 
-        //client.queue.offer(ByteUtil.getByteBuffer(new LoginRequest(player)));
         client.send(new LoginRequest(player));
         this.playerId = player;
 
@@ -143,11 +136,11 @@ public class Game {
         screen = new PlayScreen(client);
         scene = ((PlayScreen) screen).playScene();
         graphicsContext = ((PlayScreen) screen).getGraphicsContext();
-        System.out.println(Thread.currentThread().getName());
+        //System.out.println(Thread.currentThread().getName());
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                System.out.println(Thread.currentThread().getName());
+                //System.out.println(Thread.currentThread().getName());
                 stage.setScene(scene);
                 stage.setTitle(playerId);
                 frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
@@ -185,14 +178,5 @@ public class Game {
         //if(this.state == State.PLAY){
         client.send(r);
         //}
-    }
-    public void addMessage(String message){
-        /*
-        if(!(screen instanceof PlayScreen)){
-
-        }
-        ((PlayScreen) screen).textArea.appendText(message + "\n");
-        */
-        return;
     }
 }

@@ -33,7 +33,9 @@ public class Main{
         });
         screen.resetButton.setOnAction((e)->{
             game.setLimit((int)screen.limit.getValue());
+            UIHelper.prompt("提示","修改人数成功");
         });
+
         screen.loadButton.setOnAction((e)->{
             String text = screen.loadButton.getText();
             int count = game.getWorld().onlinePlayerCount();

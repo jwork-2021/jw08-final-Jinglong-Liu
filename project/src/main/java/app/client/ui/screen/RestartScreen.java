@@ -26,9 +26,9 @@ public class RestartScreen extends Screen{
     public TextField host;
     public TextField port;
     public RestartScreen(){
-        startButton = new Button("start game");
+        startButton = new Button("开始游戏");
         startButton.setPrefWidth(120);
-        connectButton = new Button("connect");
+        connectButton = new Button("连接服务器");
         //connectButton.setPrefWidth(120);
     }
     private void fetchConfig(){
@@ -64,6 +64,8 @@ public class RestartScreen extends Screen{
                 "player1", "player2","player3","player4","player5","player6")
         );
         choiceBox.setValue("player1");
+        connectButton.setDisable(false);
+        startButton.setDisable(true);
         start.getChildren().addAll(choiceBox,startButton);
         start.setAlignment(Pos.CENTER);
 

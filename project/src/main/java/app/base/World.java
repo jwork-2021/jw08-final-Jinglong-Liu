@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class World implements SendAble {
     private static final long serialVersionUID = 2L;
-    public static int WIDTH = 600;
-    public static int HEIGHT = 600;
+    public static int WIDTH = 480;
+    public static int HEIGHT = 480;
     private int state = 0;
     public World(){
         restart();
@@ -22,7 +22,11 @@ public class World implements SendAble {
     //private HashMap<String,Player>players;//error.
     private Set<Player> players;
     private List<Thing> grasses;
-
+    public void setSize(int size){
+        World.WIDTH = size;
+        World.HEIGHT = size;
+        restart();
+    }
     public List<Thing> getGrasses() {
         return grasses;
     }

@@ -23,7 +23,7 @@ public class Factory {
         return player;
     }
     public static NPTank createNPTank(World world){
-        NPTank npc = new NPTank(world,2,2,1);
+        NPTank npc = new NPTank(world,1,2,1);
         npc.setWhite();
         addTank(world,npc);
         //new Thread(npc).start();
