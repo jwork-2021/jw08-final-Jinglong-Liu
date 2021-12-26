@@ -183,20 +183,24 @@ public class Handler{
         Player player = game.getPlayer(id);
         switch (keyCode){
             case W:
+            case UP:
                 player.setDirection(Direction.UP);
-                player.moveBy(0,-5);
+                player.moveBy(0,-8);
                 break;
             case S:
+            case DOWN:
                 player.setDirection(Direction.DOWN);
-                player.moveBy(0,5);
+                player.moveBy(0,8);
                 break;
             case A:
+            case LEFT:
                 player.setDirection(Direction.LEFT);
-                player.moveBy(-5,0);
+                player.moveBy(-8,0);
                 break;
             case D:
+            case RIGHT:
                 player.setDirection(Direction.RIGHT);
-                player.moveBy(5,0);
+                player.moveBy(8,0);
                 break;
             case J:
                 player.shoot();

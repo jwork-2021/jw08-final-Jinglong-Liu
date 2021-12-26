@@ -51,22 +51,12 @@ public class Handler {
             o = (Response) ByteUtil.getObject(byteBuffer);
             int size = ByteUtil.getBytes(o).length;
             if(size > Client.BUFFER_SIZE/4 * 3){
+                System.out.println("dilatation");
                 Client.BUFFER_SIZE <<= 1;
             }
             switch (o.getMask()){
                 case Response_World: {
                     game.getWorld().setWorld((World) o);
-                    Player player = ((World) o).getPlayer(game.playerId);
-                    if (player == null) return;
-                    if (player.getHp() <= 0) {
-                        System.out.println("你输啦.");
-                        game.lose();
-                        try {
-                            client.sc.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
                     break;
                 }
                 case Response_Login: {

@@ -55,11 +55,11 @@ public abstract class Tank extends Thing{
         }
     }
     public void shoot(){
-        System.out.println("shoot");
+        // System.out.println("shoot");
         //new Thread(Factory.createBullet(world,this)).start();
         //ThreadPoolUtil.execute(Factory.createBullet(world,this));
         Factory.createBullet(world,this);
-        System.out.println("ok.");//not ok
+        //System.out.println("ok.");//not ok
     }
     /**
      * set white color

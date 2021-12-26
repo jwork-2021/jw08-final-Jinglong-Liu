@@ -13,7 +13,7 @@ public class Bullet extends Thing implements Runnable{
     }
     @Override
     public void run() {
-        System.out.println(Thread.currentThread().getName());
+        //System.out.println(Thread.currentThread().getName());
         while(getHp() > 0){
             try {
                 TimeUnit.MILLISECONDS.sleep(40);

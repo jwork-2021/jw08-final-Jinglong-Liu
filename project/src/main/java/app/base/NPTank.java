@@ -24,14 +24,14 @@ public class NPTank extends Tank implements Runnable{
     }
     private void step(){
         Direction direction = getDirection();
-        if(new Random().nextInt(5) == 0){
+        if(new Random().nextInt(8) == 0){
             turnRandomly();
         }
-        if(new Random().nextInt(5) == 0){
+        if(new Random().nextInt(8) == 0){
             shoot();
         }
         else{
-            move(5);
+            move(8);
         }
     }
     private void turnRandomly(){
