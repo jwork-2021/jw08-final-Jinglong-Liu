@@ -38,7 +38,7 @@ public class RestartScreen extends Screen{
             port = new TextField(String.valueOf(config.getPort()));
         }
         catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             //System.out.println("load fail");
             host = new TextField("127.0.0.1");
             port = new TextField("8090");

@@ -4,7 +4,6 @@ import app.base.Bullet;
 import app.base.Config;
 import app.base.NPTank;
 import app.base.World;
-import sun.java2d.opengl.WGLSurfaceData;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
