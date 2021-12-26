@@ -3,7 +3,7 @@ package app.base.request;
 import app.base.Player;
 import javafx.scene.input.KeyCode;
 
-public class KeyCodeRequest implements SendAble{
+public class KeyCodeRequest implements Request{
     private static final long serialVersionUID = 1005L;
     private KeyCode keyCode;
     private String playerId;
@@ -22,6 +22,6 @@ public class KeyCodeRequest implements SendAble{
 
     @Override
     public int getMask() {
-        return 1166;
+        return Request_KeyCode;
     }
 }

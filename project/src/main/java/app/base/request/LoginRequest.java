@@ -1,6 +1,6 @@
 package app.base.request;
 
-public class LoginRequest implements SendAble{
+public class LoginRequest implements Request{
     private static final long serialVersionUID = 1001L;
     private String id;
 
@@ -12,6 +12,6 @@ public class LoginRequest implements SendAble{
     }
     @Override
     public int getMask() {
-        return 1;
+        return Request_Login;
     }
 }

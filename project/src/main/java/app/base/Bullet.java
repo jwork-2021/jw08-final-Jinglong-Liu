@@ -16,12 +16,12 @@ public class Bullet extends Thing implements Runnable{
         System.out.println(Thread.currentThread().getName());
         while(getHp() > 0){
             try {
-                TimeUnit.MILLISECONDS.sleep(35);
+                TimeUnit.MILLISECONDS.sleep(40);
             }
             catch (InterruptedException e){
                 setHp(0);
             }
-            move(5);
+            move(10);
             //System.out.println(getX() + " " + getY());
         }
         world.remove(this);
@@ -55,7 +55,7 @@ public class Bullet extends Thing implements Runnable{
             return;
         }
         super.attack(other);
-        setHp(0);
+        modifyHp(-getHp());
     }
 
     public Bullet(World world, double maxHp,double attackValue,double defenseValue){

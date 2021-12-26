@@ -18,6 +18,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static app.base.request.Request.*;
+
 public class Handler{
     public Game game;
     private static int playerNum = 0;
@@ -51,55 +53,22 @@ public class Handler{
             handle(channel,byteBuffer);
         }
         private void handle(SocketChannel channel,ByteBuffer buffer){
-            SendAble o = null;
-
-            o = (SendAble) ByteUtil.getObject(buffer);
-
-
-            if(o instanceof LoginRequest){
-                handleLoginRequest(channel, (LoginRequest) o,buffer);
-            }
-            else if(o instanceof StateRequest){
-                try {
-                    channelQueueHashMap.get(channel).add(ByteUtil.getByteBuffer(game.getWorld()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            else if(o instanceof KeyCodeRequest){
-                String id = ((KeyCodeRequest) o).getPlayerId();
-                KeyCode keyCode = ((KeyCodeRequest) o).getKeyCode();
-                //System.out.println(keyCode);
-                Player player = game.getPlayer(id);
-                switch (keyCode){
-                    case W:
-                        player.setDirection(Direction.UP);
-                        player.moveBy(0,-5);
+            ThreadPoolUtil.execute(()->{
+                Request o = (Request) ByteUtil.getObject(buffer);
+                switch (o.getMask()){
+                    case Request_Login:
+                        handleLoginRequest(channel, (LoginRequest) o,buffer);
                         break;
-                    case S:
-                        player.setDirection(Direction.DOWN);
-                        player.moveBy(0,5);
+                    case Request_State:
+                        handleStateRequest(channel);
                         break;
-                    case A:
-                        player.setDirection(Direction.LEFT);
-                        player.moveBy(-5,0);
-                        break;
-                    case D:
-                        player.setDirection(Direction.RIGHT);
-                        player.moveBy(5,0);
-                        break;
-                    case J:
-                        player.shoot();
+                    case Request_KeyCode:
+                        handleKeyCode((KeyCodeRequest) o);
                         break;
                     default:
                         break;
                 }
-            }
-
-            else if(o instanceof MessageRequest){
-                SendAble response = new MessageResponse(((MessageRequest) o).getMessage());
-                broadcast(response);
-            }
+            });
         }
     }
     public int checkState(SocketChannel channel){
@@ -138,9 +107,6 @@ public class Handler{
             SaveUtil.saveWorld(game.getWorld(),"world");
             broadcast(new MessageResponse(id + " 离线"));
         }
-    }
-    public void saveWorld(){
-        game.saveWorld();
     }
     public void write(SocketChannel sc){
         int state = checkState(sc);
@@ -217,6 +183,41 @@ public class Handler{
     private void broadcast(SendAble o){
         for(Queue queue:channelQueueHashMap.values()){
             queue.offer(ByteUtil.getByteBuffer(o));
+        }
+    }
+    private void handleStateRequest(SocketChannel socket){
+        try {
+            socket.write(ByteUtil.getByteBuffer(game.getWorld()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void handleKeyCode(KeyCodeRequest o){
+        String id = o.getPlayerId();
+        KeyCode keyCode = o.getKeyCode();
+        Player player = game.getPlayer(id);
+        switch (keyCode){
+            case W:
+                player.setDirection(Direction.UP);
+                player.moveBy(0,-5);
+                break;
+            case S:
+                player.setDirection(Direction.DOWN);
+                player.moveBy(0,5);
+                break;
+            case A:
+                player.setDirection(Direction.LEFT);
+                player.moveBy(-5,0);
+                break;
+            case D:
+                player.setDirection(Direction.RIGHT);
+                player.moveBy(5,0);
+                break;
+            case J:
+                player.shoot();
+                break;
+            default:
+                break;
         }
     }
 }
