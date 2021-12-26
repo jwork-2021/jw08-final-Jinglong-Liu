@@ -1,5 +1,6 @@
 package app.base;
 
+import app.base.request.Response;
 import app.base.request.SendAble;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-public class World implements SendAble {
+public class World implements Response {
     private static final long serialVersionUID = 2L;
     public static int WIDTH = 480;
     public static int HEIGHT = 480;
@@ -117,7 +118,7 @@ public class World implements SendAble {
     }
     @Override
     public int getMask() {
-        return 233;
+        return Response.Response_World;
     }
     public Player getPlayer(String id){
         for(Player player:players){

@@ -33,7 +33,7 @@ public class Client extends Thread {
     }
 
     private Handler handler;
-    public static int BUFFER_SIZE = 16383;
+    public static int BUFFER_SIZE = 16384;
     public void setHandler(Handler handler) {
         this.handler = handler;
         handler.setClient(this);
@@ -66,7 +66,7 @@ public class Client extends Thread {
             }
         } catch (IOException e) {
             //e.printStackTrace();
-            UIHelper.prompt("断线", "服务器已断开，请退出重登");
+           handler.connectionClose();
         }
     }
     public void send(SendAble o){
@@ -74,7 +74,6 @@ public class Client extends Thread {
             sc.write(ByteUtil.getByteBuffer(o));
         }
         catch (IOException e){
-            //e.printStackTrace();
             return;
         }
     }

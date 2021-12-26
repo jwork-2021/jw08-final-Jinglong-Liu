@@ -1,6 +1,6 @@
 package app.base.request;
 
-public class LoginResponse implements SendAble{
+public class LoginResponse implements Response{
     private static final long serialVersionUID = -1001L;
     private int type;
     private String id;
@@ -10,7 +10,7 @@ public class LoginResponse implements SendAble{
     }
     @Override
     public int getMask() {
-        return type;
+        return Response.Response_Login;
     }
 
     public String getId() {

@@ -11,6 +11,8 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import static app.base.request.LoginResponse.*;
+import static app.base.request.ResultResponse.Result_LOSE;
+import static app.base.request.ResultResponse.Result_WIN;
 
 public class Handler {
     private app.base.request.StateRequest srq = new app.base.request.StateRequest();
@@ -40,65 +42,43 @@ public class Handler {
     }
     private class RecvHandler extends Thread{
         private ByteBuffer byteBuffer;
-        private SendAble o;
+        private Response o;
         RecvHandler(ByteBuffer buffer){
             this.byteBuffer = buffer;
         }
         @Override
         public void run() {
-            o = (SendAble) ByteUtil.getObject(byteBuffer);
+            o = (Response) ByteUtil.getObject(byteBuffer);
             int size = ByteUtil.getBytes(o).length;
             if(size > Client.BUFFER_SIZE/4 * 3){
                 Client.BUFFER_SIZE <<= 1;
             }
-            else if(o instanceof GameResult){
-
-                String state = ((GameResult) o).get(game.playerId);
-                if("win".equals(state)){
-                    game.win();
-                }
-                else if("lose".equals(state)){
-                    game.lose();
-                }
-            }
-            else if(o instanceof World){
-                game.getWorld().setWorld((World) o);
-                Player player = ((World) o).getPlayer(game.playerId);
-                if(player == null)return;
-                if(player.getHp() <= 0){
-                    System.out.println("你输啦.");
-                    game.lose();
-                    try {
-                        client.sc.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            switch (o.getMask()){
+                case Response_World: {
+                    game.getWorld().setWorld((World) o);
+                    Player player = ((World) o).getPlayer(game.playerId);
+                    if (player == null) return;
+                    if (player.getHp() <= 0) {
+                        System.out.println("你输啦.");
+                        game.lose();
+                        try {
+                            client.sc.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    break;
                 }
-            }
-            else if(o instanceof LoginResponse){
-                String id = ((LoginResponse) o).getId();
-                if(!id.equals(game.playerId)){
-                    return;
+                case Response_Login: {
+                    handleLoginResponse((LoginResponse) o);
+                    break;
                 }
-                int type = ((LoginResponse) o).getType();
-                switch (type){
-                    case LOGIN_SUCCEED:
-                        game.play();
-                        new Handler.StateRequest().start();
-                        System.out.println("登陆成功");
-                        break;
-                    case LOGIN_LIMIT:
-                        UIHelper.prompt("提示","当前游戏已满员，请稍后再来");
-                        break;
-                    case LOGIN_ALREADY:
-                        UIHelper.prompt("提示",id + "已经登录，请不要重复登录。");
-                        break;
-                    case LOGIN_LOSE:
-                        UIHelper.prompt("你输啦","你已经出局。当前游戏尚未结束，请稍后再来。");
-                        break;
-                    default:
-                        break;
+                case Response_Result: {
+                    handleResultResponse((ResultResponse) o);
+                    break;
                 }
+                default:
+                    break;
             }
         }
     }
@@ -116,6 +96,50 @@ public class Handler {
                 }
             }
             game.state = app.client.State.INIT;
+        }
+    }
+    private void handleLoginResponse(LoginResponse o){
+        String id = o.getId();
+        if (!id.equals(game.playerId)) {
+            return;
+        }
+        int type = o.getType();
+        switch (type) {
+            case LOGIN_SUCCEED:
+                game.play();
+                new Handler.StateRequest().start();
+                System.out.println("登陆成功");
+                break;
+            case LOGIN_LIMIT:
+                UIHelper.prompt("提示", "当前游戏已满员，请稍后再来");
+                break;
+            case LOGIN_ALREADY:
+                UIHelper.prompt("提示", id + "已经登录，请不要重复登录。");
+                break;
+            case LOGIN_LOSE:
+                UIHelper.prompt("你输啦", "你已经出局。当前游戏尚未结束，请稍后再来。");
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void handleResultResponse(ResultResponse o){
+        int state = o.getType();
+        switch (state){
+            case Result_WIN:
+                game.win();
+                break;
+            case Result_LOSE:
+                game.lose();
+                break;
+            default:
+                break;
+        }
+    }
+    public void connectionClose(){
+        if(game.state == State.PLAY){
+            UIHelper.prompt("断线", "服务器已断开，请退出重登");
         }
     }
 }

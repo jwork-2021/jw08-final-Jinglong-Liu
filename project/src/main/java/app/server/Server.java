@@ -1,13 +1,5 @@
 package app.server;
 
-import app.base.request.GameResult;
-import app.base.request.SendAble;
-import app.base.request.SimpleRequest;
-import app.util.ByteUtil;
-import app.util.SaveUtil;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
@@ -83,7 +75,6 @@ public class Server extends Thread{
                         System.out.println("断开连接");
                         SocketChannel sc = (SocketChannel) key.channel();
                         handler.handleOffline(sc);
-
                         sc.close();
                         it.remove();
                         continue;
@@ -93,6 +84,7 @@ public class Server extends Thread{
             }
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("error\n\n");
         }
     }
 }

@@ -1,18 +1,13 @@
 package app.client;
 
-import app.base.Config;
 import app.base.request.KeyCodeRequest;
 import app.base.request.LoginRequest;
-import app.base.Player;
 import app.base.World;
-import app.base.request.MessageRequest;
 import app.client.ui.screen.*;
 import app.util.SaveUtil;
-import app.util.UIHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
@@ -150,11 +145,6 @@ public class Game {
                 animation.play();
                 scene.setOnKeyPressed(e->keyPress(e.getCode()));
             }
-        });
-        ((PlayScreen) screen).button.setOnAction((e)->{
-            handler.getClient().send(new MessageRequest(
-                    playerId + ":" +((PlayScreen) screen).textField.getText()));
-            ((PlayScreen) screen).textField.clear();
         });
     }
     public void lose(){

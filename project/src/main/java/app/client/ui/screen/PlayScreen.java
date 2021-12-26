@@ -1,26 +1,15 @@
 package app.client.ui.screen;
 
-import app.base.Bullet;
-import app.base.request.SendAble;
-import app.base.request.SimpleRequest;
 import app.client.Client;
-import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import org.omg.CORBA.BAD_CONTEXT;
 
 import static app.base.World.WIDTH;
 import static app.base.World.HEIGHT;

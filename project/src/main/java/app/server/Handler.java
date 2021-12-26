@@ -4,21 +4,19 @@ import app.base.*;
 import app.base.request.*;
 import app.server.game.Factory;
 import app.util.ByteUtil;
-import app.util.FetchUtil;
 import app.util.SaveUtil;
 import app.util.ThreadPoolUtil;
 import javafx.scene.input.KeyCode;
 
+import javax.xml.transform.Result;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Queue;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static app.base.request.Request.*;
+import static app.base.request.ResultResponse.*;
 
 public class Handler{
     public Game game;
@@ -53,8 +51,10 @@ public class Handler{
             handle(channel,byteBuffer);
         }
         private void handle(SocketChannel channel,ByteBuffer buffer){
-            ThreadPoolUtil.execute(()->{
+
                 Request o = (Request) ByteUtil.getObject(buffer);
+                if(o == null)return;
+
                 switch (o.getMask()){
                     case Request_Login:
                         handleLoginRequest(channel, (LoginRequest) o,buffer);
@@ -68,13 +68,12 @@ public class Handler{
                     default:
                         break;
                 }
-            });
         }
     }
     public int checkState(SocketChannel channel){
         String id = channelIdHashMap.getOrDefault(channel,null);
         if(id == null || game.getPlayer(id) == null){
-            return 0;
+            return Result_PLAY;
         }
         //else if(game.getTheOtherPlayer(id)!=null
         //        && game.getTheOtherPlayer(id).getHp() <= 0){
@@ -86,13 +85,13 @@ public class Handler{
                 .filter(player->(!player.getPlayerId().equals(id)))
                 .filter(player -> player.getHp() > 0).count();
         if(c1 > 0 && c2 == 0){
-            return 2;
+            return Result_WIN;
         }
         else if(game.getPlayer(id).getHp() <= 0){
-            return 1;
+            return Result_LOSE;
         }
 
-        return 0;
+        return Result_PLAY;
     }
     public void setGameState(int state){
         game.getWorld().setState(state);
@@ -101,34 +100,25 @@ public class Handler{
         channelQueueHashMap.remove(channel);
         String id = channelIdHashMap.getOrDefault(channel,null);
         if(id != null){
-            System.out.println(id);
             Player player = game.getPlayer(id);
             player.setOnline(false);
-            SaveUtil.saveWorld(game.getWorld(),"world");
-            broadcast(new MessageResponse(id + " 离线"));
+            //SaveUtil.saveWorld(game.getWorld(),"world");
         }
     }
     public void write(SocketChannel sc){
         int state = checkState(sc);
         setGameState(Math.max(game.getWorld().getState(),state));
         String id = channelIdHashMap.getOrDefault(sc,null);
-        if(state == 1){
+        if(state == Result_LOSE || state == Result_WIN){
+            game.getWorld().getPlayer(id).setOnline(false);
             try {
-                sc.write(ByteUtil.getByteBuffer(GameResult.loserResult(id)));
-                game.getWorld().getPlayer(id).setOnline(false);
-                //game.getWorld().removePlayer(game.getPlayer(id));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(state == 2){
-            try {
-                sc.write(ByteUtil.getByteBuffer(GameResult.winnerResult(id)));
-                game.getWorld().getPlayer(id).setOnline(false);
-                //game.getWorld().removePlayer(game.getPlayer(id));
-            } catch (IOException e) {
-                e.printStackTrace();
+                sc.write(ByteUtil.getByteBuffer(new ResultResponse(id,state)));
+            }catch (IOException e){
+                try {
+                    sc.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
         }
         else if(channelQueueHashMap.containsKey(sc) && !channelQueueHashMap.get(sc).isEmpty()){
@@ -180,17 +170,12 @@ public class Handler{
             }
         }
     }
-    private void broadcast(SendAble o){
-        for(Queue queue:channelQueueHashMap.values()){
-            queue.offer(ByteUtil.getByteBuffer(o));
-        }
-    }
+
     private void handleStateRequest(SocketChannel socket){
-        try {
-            socket.write(ByteUtil.getByteBuffer(game.getWorld()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        //socket.write(ByteUtil.getByteBuffer(game.getWorld()));
+        channelQueueHashMap.get(socket).offer(ByteUtil.getByteBuffer(game.getWorld()));
+
     }
     private void handleKeyCode(KeyCodeRequest o){
         String id = o.getPlayerId();
