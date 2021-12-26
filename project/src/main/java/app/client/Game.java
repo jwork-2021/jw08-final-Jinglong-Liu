@@ -1,11 +1,13 @@
 package app.client;
 
+import app.base.Config;
 import app.base.request.KeyCodeRequest;
 import app.base.request.LoginRequest;
 import app.base.Player;
 import app.base.World;
 import app.base.request.MessageRequest;
 import app.client.ui.screen.*;
+import app.util.SaveUtil;
 import app.util.UIHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -103,6 +105,7 @@ public class Game {
             public void handle(ActionEvent event) {
                 String host = ((RestartScreen) screen).host.getText();
                 String port = ((RestartScreen) screen).port.getText();
+                SaveUtil.saveConfig(host, Integer.valueOf(port));
                 connectRequest(host,Integer.valueOf(port));
             }
         });

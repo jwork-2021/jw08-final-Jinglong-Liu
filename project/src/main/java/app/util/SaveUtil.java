@@ -1,6 +1,7 @@
 package app.util;
 
 import app.base.Bullet;
+import app.base.Config;
 import app.base.NPTank;
 import app.base.World;
 import sun.java2d.opengl.WGLSurfaceData;
@@ -26,5 +27,9 @@ public class SaveUtil {
         world.clearItem(Bullet.class);
         world.clearItem(NPTank.class);
         return save(world,fileName);
+    }
+    public static boolean saveConfig(String host,int port){
+        Config config = new Config(host,port);
+        return save(config,"config");
     }
 }

@@ -1,6 +1,8 @@
 package app.client.ui.screen;
 
+import app.base.Config;
 import app.base.World;
+import app.util.FetchUtil;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,12 +30,22 @@ public class RestartScreen extends Screen{
         startButton.setPrefWidth(120);
         connectButton = new Button("connect");
         //connectButton.setPrefWidth(120);
-
-        host = new TextField("127.0.0.1");
-        port = new TextField("8090");
     }
-
+    private void fetchConfig(){
+        try {
+            Config config = FetchUtil.getConfig("config");
+            host = new TextField(config.getHost());
+            port = new TextField(String.valueOf(config.getPort()));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            //System.out.println("load fail");
+            host = new TextField("127.0.0.1");
+            port = new TextField("8090");
+        }
+    }
     protected Node startNode() {
+        this.fetchConfig();
         VBox buttons = new VBox();
 
         buttons.setPadding(new Insets(15, 12, 15, 12));
