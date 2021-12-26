@@ -1,0 +1,479 @@
+%-----------------------------------------------------------------------
+% 中国科学: 信息科学 中文模板, 请用 CCT-LaTeX 编译
+% http://scis.scichina.com
+%-----------------------------------------------------------------------
+
+\documentclass{SCIS2022cn}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 作者附加的定义
+%%% 常用环境已经加载好, 不需要重复加载
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\standardtilde \let\standardtilde=\relax
+\usepackage{CJK}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{epstopdf}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 开始
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 作者不需要修改此处信息
+\ArticleType{论文}
+%\SpecialTopic{}
+%\Luntan{中国科学院学部\quad 科学与技术前沿论坛}
+\Year{2022}
+\Vol{52}
+\No{1}
+\BeginPage{1}
+\DOI{}
+\ReceiveDate{}
+\ReviseDate{}
+\AcceptDate{}
+\OnlineDate{}
+\AuthorMark{}
+\AuthorCitation{}
+\enAuthorCitation{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Developing a Java Game from Scratch}{引用的标题}
+
+\entitle{Developing a Java Game from Scratch}{Title for citation}
+
+%\author[1,2]{作者}{Ming XING1}{}
+%\author[2]{作者}{Ming XING2}{{xingming2@xxxx.xxx}}
+\author[1]{\emph{刘京龙}}{\emph{Liu Jinglong}}{{191220066@smail.nju.edu.cn}}
+%\author[3]{作者}{Ming XING4}{}
+%\author[1,2]{作者}{Ming XING5}{}
+%\author[1,2]{作者}{\\Ming XING6}{{xingming6@xxxx.xxx}}
+%5\author[1,2]{作者}{Ming XING7}{}
+%若英文部分的emaillist太长需要换行的话,形式单独写在这里
+%\enauthoremaillist{xingming1@xxxx.xxx, xingming2@xxxx.xxx, xingming3@xxxx.xxx, xingming4\\@xxxx.xxx, xingming5@xxxx.xxx}
+
+%\comment{\dag~同等贡献}
+%\encomment{\dag~Equal contribution}
+
+\address[1]{南京大学仙林校区, 南京 210033}{Nanjing University Xianlin Campus, Nanjing {\rm 210033}, China}
+
+\abstract{本文是java结课作业：从头开始实现一个java游戏的报告。
+此Java游戏是坦克大战游戏。游戏中实现了多人联机、断线重连等功能，并编写了相应的测试用例。旨在通过开发游戏，进一步理解和掌握java Socket编程、输入输出、并发控制、单元测试等编程技巧，培养良好的编程风格。采用JavaFx 图形界面，没有使用任何游戏引擎。}
+
+\enabstract{This article is a report on the final assignment in \emph{Advanced Java} course:Developing a java game from scratch.This java game is a tank war game. In the game, the functions of multi person online, disconnection and reconnection are realized, and the corresponding test cases are written.It aims to further understand and master java socket programming, input and output, concurrency control, unit testing and other programming skills through game development, and cultivate a good programming style.JavaFX graphical interface is adopted without any game engine.}
+
+\keywords{Java, JavaFx, 网络对战游戏, IO,C/S架构,Selector}
+\enkeywords{Java, JavaFx, online game, IO,Client/Server,Selector}
+
+\maketitle
+
+\section{开发目标}
+
+本次开发目标是完成一个可以多人联机的Roguelike网络对战游戏。结合作者经历和之前的开发经验，将具体游戏内容定为经典坦克大战游戏。
+灵感来源为 \href{http://www.4399.com/flash/4963_3.htm}{4399坦克大战}
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.33,natwidth=908,natheight=778]{img/4399tank.png}
+\end{figure}
+
+\newpage
+
+\section{设计理念}
+代码采用maven进行管理，图形界面采用JavaFx。为方便起见，暂时不适用css优化界面，所有界面采用java源码编写。
+项目采用C/S架构，设有1个服务器，n个客户端。服务器与客户端的界面和逻辑分开编写。而游戏的基础类信息(元素等信息，可以传递)两者共享，可以在服务器与客户端装箱-拆箱传递对象
+整个游戏不使用任何现成游戏引擎。
+
+
+\section{技术问题}
+\subsection{面向对象设计}
+项目采用面向对象的方式编写，将地图、地图元素、玩家、客户端与服务器等事物设计成类和对象，达到对实际的模拟。
+基础抽象类Thing,表示地图中的一个元素。
+含有以下属性：
+位置(x,y),图片，大小(宽度和高度)：这些信息用于描述在地图中的状态，可以据此绘制元素。
+攻击、防御、生命、方向，地图的引用。这些信息用于描述在游戏中的状态，用于游戏中逻辑处理与状态判断。
+
+主要含有以下方法：(略去getter-setter等方法)
+modifyHp(int):生命值变化，以及状态(图片，是否仍然存在)的变化。一般考虑到如果hp<=0。就将自己从地图中移除。
+moveBy(double dx,double dy):描述对象有移动意愿时，发生的变化。默认实现为移动（dx,dy距离，在子类中考虑碰撞处理，出界问题）
+intersects（Thing thing)：用于判断两对象是否发生了碰撞（位置有交集）
+
+
+Thing的子类主要有坦克（Tank）、子弹（Bullet)以及地图上的各种元素（砖块，草地等）。
+Thing的所有子类要重写setImage()方法，设置各自的图片，并至少在构造方法调用一次。坦克、子弹更需要根据当前的方向设置不同的图片。
+坦克类重写了Thing的moveBy方法，逻辑为如果目标点没有和别的对象碰撞，或者碰撞对象是草地，那么前往目标点，否则攻击一次目标。另外如果目标点出界，就产生动作。
+坦克类增加了shoot()方法，表示发射一颗子弹。
+玩家类在坦克类的基础上，增加了playerId属性，用于区分不同玩家；isOnline属性，判断是否在线。此外还增加了setColor方法，根据当前生命值，设置不同颜色的图片。在modifyHp（）中调用。
+子弹类重写attack()方法，与坦克类基本类似，区别在于子弹是一次性的，子弹攻击别人后，自己也销毁。还要重写moveBy，在出界时销毁。
+此外，子弹类还实现了Runnable接口，子弹一旦被创造，将独自开启一个线程运行，不受主程序或坦克控制；子弹被销毁时销毁线程。具体在[并发控制]部分介绍。
+
+地图类World,保存所有上述的对象。用并发对象CopyOnWriteArrayList保存。绘制地图只有遍历这个列表，绘制所以对象即可。
+此外为调用方便还将所有Player单独设一个列表保存。
+World实现restart()方法，设置一个初始状态(默认地图，清空坦克和子弹)。每次重新开始时，调用这个方法即可。
+
+\subsection{网络通信}
+本游戏采用selector，nio实现服务器-客户端一对多异步通信。服务器启动时，在selector上注册为可接受,一旦有客户端连接，将频道(Channel)注册为可读，可写。
+此后检测到可读，读取信息并处理，并准备好待写的信息。注册可写；检测到可写，写入准备好的信息，注册为可读。
+可以同时异步处理多个客户端的信息。
+具体读写内容逻辑：
+所有要读写的对象实现Serializable接口用于序列化。因此上一部分讲到的World和World里的所有元素，都要实现Serializable接口。
+此外实现了辅助方法类ByteUtil，用于对象与ByteBuffer之间的转换。
+每次需要写入信息时，先封装为一个实现了Serializable接口的对象，转为ByteBuffer写入；
+每次读取信息时，先读入一个ByteBuffer，再转化为不同的Serializable对象，提取信息进行处理。
+
+在本工程的设计中，为了较好的实现同步，采用瘦客户端的方式，也即客户端通过键盘鼠标传递请求给服务器，服务器接受不同客户端信息，进行处理，并将新地图和状态传回客户端，客户端根据收到的信息重绘地图。也即采用状态同步，不采用帧同步。如此逻辑较为清晰，并发控制只要在服务器端处理，客户端不处理逻辑，只负责发送请求和绘制地图。
+
+游戏逻辑如下：
+客户端选择id，发送登录请求；
+服务器判断是否已经登录。如果已经登录，发回错误信息，不然设置登录状态，发回成功信息。
+客户端收到成功信息，进入游戏界面。此时启动一个线程，每隔一段时间发送状态请求。
+服务器每收到一个状态请求，发回一个地图。客户端收到地图，更新地图。另有一个线程负责绘制地图，每秒30帧避免卡顿。
+客户端按下键盘，发送信息给服务器；服务器收到按键，对玩家进行处理更新，表现在地图的更新上。
+由于客户端以较高的频率发送状态请求和绘制地图，客户端，服务器可以快速通信，效果可以很快体现在地图上，就好像在客户端本地进行单机游戏的效果一样。
+
+服务器一旦检测到玩家死亡，发回失败信息；检测到只有一个玩家存活（至少有两个玩家参与过），发回胜利信息并重置地图。
+客户端根据胜利/失败状态信息给出界面提示。客户端收到胜利/失败信息，断开连接。一旦一局游戏产生胜者（其余为败者）服务器重置，可以进行下一轮游戏。
+
+\subsection{输入输出}
+本游戏实现了客户端断线重连和服务器端保存进度。
+由于客户端仅用于发送请求和绘制，信息全部保存在服务器端。一旦客户端掉线，服务器端不删除对应的玩家，而是将其设置为掉线(setOnline(false))，可以重新登录。
+而玩家对应的位置，生命值等属性，都不会发生变化。同一个玩家（以id区别）重登后，可以发现在上一次掉线的位置。
+当然在别的玩家眼里，该玩家掉线期间没有任何行动，重新上线后恢复行动。如果玩家在掉线期间被击败，重新登录后显示失败信息。
+到此为止非常容易实现，不需要考虑输入输出。
+
+下面考虑模拟"停服维护"的情况：服务器关闭重启，应当可以重新恢复进度。
+由于所有游戏信息保存在一个World对象中，因此只要将World保存，读取即可。
+为此实现两个工具类SaveUtil和FetchUtil，用户保存和读取地图。
+World需要实现Serializable接口，这在上文已经提到过。
+SaveUtil类实现私有函数boolean save(Serializable o,String url)，表示将一个Serializable保存到文件名url中;
+实现public静态方法saveWorld(String url)保存World,而在保存之前先清空现有的子弹和npc，并将所有玩家的在线状态online设置为false。
+客户端检测到连接关闭，会弹出提示框。此后玩家任何操作不被接收，地图不会变化，只能关闭游戏重来。
+每次服务器关闭时，会执行saveWorld方法，将现有进度保存在磁盘中。而每次重启，都可以选择恢复进度，执行fetchWorld（当然也可以选择重新开始）。
+然后，状态便恢复到"服务器正常但是客户端都掉线"的状态。客户端重新连上即可从上次进度开始继续游戏。
+
+\subsection{并发控制}
+用selector 方式连接通信，服务器对客户端的信息异步处理，考虑到竞争冲突，将关键的信息:World 的things属性设为并发对象CopyOnWriteArrayList,避免了冲突。
+由于信息只在服务器端处理，因此每次发给客户端的都是一样的信息，不存在不同客户端状态不同步的问题。
+服务器需要多线程处理，因此设置一个线程池工具类ThreadPoolUtil，维护一个线程池。每次启动Runnable对象，都通过线程池调用。
+每个子弹都是一个线程。子弹被发出后，定时按一个方向执行moveBy()即可。当发生碰撞/出界时，销毁线程。
+此外，服务器端还有增加npc的选项，每个npc(NPTank)也是一个线程，每隔一定时间随机游走，并有一定概率发射子弹。
+服务器在处理登录信息时需要加同步锁。避免同一时间多个ip以同一个id登录产生的问题。
+
+\section{工程问题}
+对象在初始化时有一定的规约，对象的创建统一在简单工厂Factory中。只有服务器才可以使用工厂创建对象。
+
+设置一个UI辅助类。用于规格化输出错误提示。因为界面变化需要在主线程处理（Platform.runLater(()->{})）
+
+图片类(Image)不可简单的转成buffer传输，而每个对象需要用图片去绘制，这会产生问题。我采用的解决方案是，Image图片不保存在Thing对象中，而是保存一个字符串FileName，表示当前文件的字符串。修改图片时，更新此字符串即可。绘制图片时，根据字符串获取图片绘制。
+注意代码的复用
+
+\section{课程感言}
+
+算法如算法\ref{alg1}所示.
+\begin{algorithm}
+%\floatname{algorithm}{Algorithm}%更改算法前缀名称
+\renewcommand{\algorithmicrequire}{\textbf{输入:}}% 更改输入名称
+\renewcommand{\algorithmicensure}{\textbf{主迭代:}}% 更改输出名称
+\newcommand{\LASTCON}{\item[\algorithmiclastcon]}
+\newcommand{\algorithmiclastcon}{\textbf{输出:}}% 更改输出名称
+\footnotesize
+\caption{算法标题}
+\label{alg1}
+\begin{algorithmic}[1]
+    \REQUIRE $n \geq 0 \vee x \neq 0$;
+    \ENSURE $y = x^n$;
+    \STATE $y \Leftarrow 1$;
+    \IF{$n < 0$}
+        \STATE $X \Leftarrow 1 / x$;
+        \STATE $N \Leftarrow -n$;
+    \ELSE
+        \STATE $X \Leftarrow x$;
+        \STATE $N \Leftarrow n$;
+    \ENDIF
+    \WHILE{$N \neq 0$}
+        \IF{$N$ is even}
+            \STATE $X \Leftarrow X \times X$;
+            \STATE $N \Leftarrow N / 2$;
+        \ELSE[$N$ is odd]
+            \STATE $y \Leftarrow y \times X$;
+            \STATE $N \Leftarrow N - 1$;
+        \ENDIF
+    \ENDWHILE
+    \LASTCON
+\end{algorithmic}
+\end{algorithm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 致谢
+%%% 非必选
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\Acknowledgements{致谢.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 补充材料说明
+%%% 非必选
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\Supplements{补充材料.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 参考文献, {}为引用的标签, 数字/字母均可
+%%% 文中上标引用: \upcite{1,2}
+%%% 文中正常引用: \cite{1,2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{99}
+
+\bibitem{1} Author A, Author B, Author C. Reference title. Journal, Year, Vol: Number or pages
+
+\bibitem{2} Author A, Author B, Author C, et al. Reference title. In: Proceedings of Conference, Place, Year. Number or pages
+
+\end{thebibliography}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 附录章节, 自动从A编号, 以\section开始一节
+%%% 非必选
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{appendix}
+%\section{附录}
+%附录从这里开始.
+%\begin{figure}[H]
+%\centering
+%%\includegraphics{fig1.eps}
+%\cnenfigcaption{附录里的图}{Caption}
+%\label{fig1}
+%\end{figure}
+%\end{appendix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 自动生成英文标题部分
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeentitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 补充材料, 以附件形式作网络在线, 不出现在印刷版中
+%%% 不做加工和排版, 仅用于获得图片和表格编号
+%%% 自动从I编号, 以\section开始一节
+%%% 可以没有\section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{supplement}
+%\section{supplement1}
+%自动从I编号, 以section开始一节.
+%\begin{figure}[H]
+%\centering
+%\includegraphics{fig1.eps}
+%\cnenfigcaption{补充材料里的图}{Caption}
+%\label{fig1}
+%\end{figure}
+%\end{supplement}
+
+\end{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 本模板使用的latex排版示例
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% 章节
+\section{}
+\subsection{}
+\subsubsection{}
+
+
+%%% 普通列表
+\begin{itemize}
+\item Aaa aaa.
+\item Bbb bbb.
+\item Ccc ccc.
+\end{itemize}
+
+%%% 自由编号列表
+\begin{itemize}
+\itemindent 4em
+\item[(1)] Aaa aaa.
+\item[(2)] Bbb bbb.
+\item[(3)] Ccc ccc.
+\end{itemize}
+
+%%% 定义、定理、引理、推论等, 可用下列标签
+%%% definition 定义
+%%% theorem 定理
+%%% lemma 引理
+%%% corollary 推论
+%%% axiom 公理
+%%% propsition 命题
+%%% example 例
+%%% exercise 习题
+%%% solution 解名
+%%% notation 注
+%%% assumption 假设
+%%% remark 注释
+%%% property 性质
+%%% []中的名称可以省略, \label{引用名}可在正文中引用
+\begin{definition}[定义名]\label{def1}
+定义内容.
+\end{definition}
+
+
+
+%%% 单图
+%%% 可在文中使用图\ref{fig1}引用图编号
+\begin{figure}[!t]
+\centering
+\includegraphics{fig1.eps}
+\cnenfigcaption{中文图题}{Caption}
+\label{fig1}
+\end{figure}
+
+%%% 并排图
+%%% 可在文中使用图\ref{fig1}、图\ref{fig2}引用图编号
+\begin{figure}[!t]
+\centering
+\begin{minipage}[c]{0.48\textwidth}
+\centering
+\includegraphics{fig1.eps}
+\end{minipage}
+\hspace{0.02\textwidth}
+\begin{minipage}[c]{0.48\textwidth}
+\centering
+\includegraphics{fig2.eps}
+\end{minipage}\\[3mm]
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\cnenfigcaption{中文图题1}{Caption1}
+\label{fig1}
+\end{minipage}
+\hspace{0.02\textwidth}
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\cnenfigcaption{中文图题2}{Caption2}
+\label{fig2}
+\end{minipage}
+\end{figure}
+
+%%% 并排子图
+%%% 需要英文分图题 (a)...; (b)...
+\begin{figure}[!t]
+\centering
+\begin{minipage}[c]{0.48\textwidth}
+\centering
+\includegraphics{subfig1.eps}
+\end{minipage}
+\hspace{0.02\textwidth}
+\begin{minipage}[c]{0.48\textwidth}
+\centering
+\includegraphics{subfig2.eps}
+\end{minipage}
+\cnenfigcaption{中文图题}{Caption}
+\label{fig1}
+\end{figure}
+
+%%% 算法
+%%% 可在文中使用 算法\ref{alg1} 引用算法编号
+\begin{algorithm}
+%\floatname{algorithm}{Algorithm}%更改算法前缀名称
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}% 更改输入名称
+%\renewcommand{\algorithmicensure}{\textbf{Output:}}% 更改输出名称
+\footnotesize
+\caption{算法标题}
+\label{alg1}
+\begin{algorithmic}[1]
+    \REQUIRE $n \geq 0 \vee x \neq 0$;
+    \ENSURE $y = x^n$;
+    \STATE $y \Leftarrow 1$;
+    \IF{$n < 0$}
+        \STATE $X \Leftarrow 1 / x$;
+        \STATE $N \Leftarrow -n$;
+    \ELSE
+        \STATE $X \Leftarrow x$;
+        \STATE $N \Leftarrow n$;
+    \ENDIF
+    \WHILE{$N \neq 0$}
+        \IF{$N$ is even}
+            \STATE $X \Leftarrow X \times X$;
+            \STATE $N \Leftarrow N / 2$;
+        \ELSE[$N$ is odd]
+            \STATE $y \Leftarrow y \times X$;
+            \STATE $N \Leftarrow N - 1$;
+        \ENDIF
+    \ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+%%% 简单表格
+%%% 可在文中使用 表\ref{tab1} 引用表编号
+\begin{table}[!t]
+\cnentablecaption{表题}{Caption}
+\label{tab1}
+\footnotesize
+\tabcolsep 49pt %space between two columns. 用于调整列间距
+\begin{tabular*}{\textwidth}{cccc}
+\toprule
+  Title a & Title b & Title c & Title d \\\hline
+  Aaa & Bbb & Ccc & Ddd\\
+  Aaa & Bbb & Ccc & Ddd\\
+  Aaa & Bbb & Ccc & Ddd\\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+%%% 换行表格
+\begin{table}[!t]
+\cnentablecaption{表题}{Caption}
+\label{tab1}
+\footnotesize
+\def\tabblank{\hspace*{10mm}} %blank leaving of both side of the table. 左右两边的留白
+\begin{tabularx}{\textwidth} %using p{?mm} to define the width of a column. 用p{?mm}控制列宽
+{@{\tabblank}@{\extracolsep{\fill}}cccp{100mm}@{\tabblank}}
+\toprule
+  Title a & Title b & Title c & Title d \\\hline
+  Aaa & Bbb & Ccc & Ddd ddd ddd ddd.
+
+  Ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd ddd.\\
+  Aaa & Bbb & Ccc & Ddd ddd ddd ddd.\\
+  Aaa & Bbb & Ccc & Ddd ddd ddd ddd.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%%% 单行公式
+%%% 可在文中使用 (\ref{eq1})式 引用公式编号
+%%% 如果是句子开头, 使用 公式(\ref{eq1}) 引用
+\begin{equation}
+A(d,f)=d^{l}a^{d}(f),
+\label{eq1}
+\end{equation}
+
+%%% 不编号的单行公式
+\begin{equation}
+\nonumber
+A(d,f)=d^{l}a^{d}(f),
+\end{equation}
+
+%%% 公式组
+\begin{eqnarray}
+\nonumber
+&X=[x_{11},x_{12},\ldots,x_{ij},\ldots ,x_{n-1,n}]^{\rm T},\\
+\nonumber
+&\varepsilon=[e_{11},e_{12},\ldots ,e_{ij},\ldots ,e_{n-1,n}],\\
+\nonumber
+&T=[t_{11},t_{12},\ldots ,t_{ij},\ldots ,t_{n-1,n}].
+\end{eqnarray}
+
+%%% 条件公式
+\begin{eqnarray}
+\sum_{j=1}^{n}x_{ij}-\sum_{k=1}^{n}x_{ki}=
+\left\{
+\begin{aligned}
+1,&\quad i=1,\\
+0,&\quad i=2,\ldots ,n-1,\\
+-1,&\quad i=n.
+\end{aligned}
+\right.
+\label{eq1}
+\end{eqnarray}
+
+%%% 其他格式
+\footnote{Comments.} %footnote. 脚注
+\raisebox{-1pt}[0mm][0mm]{xxxx} %put xxxx upper or lower. 控制xxxx的垂直位置
+
+%%% 图说撑满
+\Caption\protect\linebreak \leftline{Caption}
