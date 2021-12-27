@@ -68,6 +68,10 @@ public class Game {
         });
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public World getWorld() {
         return world;
     }

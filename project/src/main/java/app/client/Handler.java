@@ -98,7 +98,7 @@ public class Handler {
             case LOGIN_SUCCEED:
                 game.play();
                 new Handler.StateRequest().start();
-                System.out.println("登陆成功");
+                System.out.println("登录成功");
                 break;
             case LOGIN_LIMIT:
                 UIHelper.prompt("提示", "当前游戏已满员，请稍后再来");
@@ -128,7 +128,7 @@ public class Handler {
         }
     }
     public void connectionClose(){
-        if(game.state == State.PLAY){
+        if(game.state == State.PLAY && game.getStage()!=null){
             UIHelper.prompt("断线", "服务器已断开，请退出重登");
         }
     }

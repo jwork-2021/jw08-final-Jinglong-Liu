@@ -128,7 +128,7 @@ public class Handler{
             try {
                 sc.write(channelQueueHashMap.get(sc).poll());
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
