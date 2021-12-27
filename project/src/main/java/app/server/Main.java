@@ -95,7 +95,7 @@ public class Main{
     private void disconnectAction(){
         game.saveWorld();
     }
-    class AddNPCThread extends Thread{
+    private class AddNPCThread extends Thread{
         @Override
         public void run() {
             while(!Thread.currentThread().interrupted()){

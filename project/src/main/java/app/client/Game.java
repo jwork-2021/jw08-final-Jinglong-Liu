@@ -17,9 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-enum State{
-    INIT,CONNECTED,PLAY,LOSE,WIN;
-}
+
 public class Game {
     volatile State state;
     private Handler handler;
@@ -35,23 +33,18 @@ public class Game {
     String playerId;
     private KeyFrame frame;
     private Timeline animation;
-    //Player player;
 
-    public Stage getStage() {
-        return stage;
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
+    }
+
+    public State getState() {
+        return state;
     }
 
     public GraphicsContext getGraphicsContext() {
         return graphicsContext;
     }
-
-    //public void setPlayer(Player player) {
-      //  this.player = player;
-    //}
-
-    //public Player getPlayer() {
-    //    return player;
-    //}
 
     public Game(Stage stage){
         this.stage = stage;
@@ -60,6 +53,7 @@ public class Game {
 
         this.state = State.INIT;
         this.world = new World();
+        if(stage == null)return;
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -110,6 +104,7 @@ public class Game {
         client.start();
     }
     public void connectSucceed(){
+        if(stage==null)return;
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -128,6 +123,7 @@ public class Game {
     }
     public void play(){
         this.state = State.PLAY;
+        if(stage == null)return;
         screen = new PlayScreen(client);
         scene = ((PlayScreen) screen).playScene();
         graphicsContext = ((PlayScreen) screen).getGraphicsContext();
@@ -149,21 +145,25 @@ public class Game {
     }
     public void lose(){
         this.state = State.LOSE;
-        Platform.runLater(()->{
-            restart(new LoseScreen());
-        });
+        if(stage!=null){
+            Platform.runLater(()->{
+                restart(new LoseScreen());
+            });
+        }
     }
     public void win(){
         this.state = State.WIN;
-        Platform.runLater(()->{
-            restart(new WinScreen());
-        });
+        if(stage!=null){
+            Platform.runLater(()->{
+                restart(new WinScreen());
+            });
+        }
     }
 
     private void step(double elapsedTime){
         world.render(graphicsContext);
     }
-    private void keyPress(KeyCode keyCode){
+    public void keyPress(KeyCode keyCode){
         KeyCodeRequest r = new KeyCodeRequest(playerId,keyCode);
         //if(this.state == State.PLAY){
         client.send(r);

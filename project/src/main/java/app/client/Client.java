@@ -40,7 +40,7 @@ public class Client extends Thread {
     }
     SocketChannel sc;
 
-    private void connect(String host,int port){
+    public void connect(String host,int port){
         try {
             sc = SocketChannel.open();
             sc.connect(new InetSocketAddress(host, port));

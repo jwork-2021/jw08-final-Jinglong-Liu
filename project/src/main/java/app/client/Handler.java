@@ -36,7 +36,7 @@ public class Handler {
     }
 
 
-    public void connect(){
+    void connect(){
         System.out.println("连接成功");
         game.connectSucceed();
     }

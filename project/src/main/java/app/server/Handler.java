@@ -26,6 +26,9 @@ public class Handler{
     }
     private Server server;
     volatile HashMap<SocketChannel,String> channelIdHashMap = new HashMap<>();
+    public HashMap<SocketChannel,String>channelIdHashMap(){
+        return channelIdHashMap;
+    }
     HashMap<SocketChannel, Queue<ByteBuffer>>channelQueueHashMap = new HashMap<>();
     /**
      * constructor

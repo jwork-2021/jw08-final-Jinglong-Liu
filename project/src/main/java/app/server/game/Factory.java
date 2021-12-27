@@ -79,7 +79,7 @@ public class Factory {
         world.clear();
         return world;
     }
-    public static World getWorldMap(){
+    public static World createWorld(){
         World world = new World();
         return world;
     }
