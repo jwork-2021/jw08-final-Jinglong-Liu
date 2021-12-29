@@ -1,10 +1,6 @@
 package app.base;
 
 import app.server.game.Factory;
-import app.util.ThreadPoolUtil;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class Tank extends Thing{
     private static final long serialVersionUID = 3L;

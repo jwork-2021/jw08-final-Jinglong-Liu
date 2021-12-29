@@ -1,12 +1,9 @@
 package app.base;
 
 import app.base.request.Response;
-import app.base.request.SendAble;
-import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;

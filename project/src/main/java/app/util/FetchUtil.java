@@ -5,7 +5,6 @@ import app.base.Player;
 import app.base.World;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
