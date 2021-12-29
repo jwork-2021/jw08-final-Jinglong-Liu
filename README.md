@@ -17,3 +17,14 @@
 - 等
 
 请使用《中国科学》的[latex模板](http://scis.scichina.com/download/ssi-template.zip)进行排版（不少于6页），输出pdf文件提交。
+
+## 说明
+- 已经完成代码和报告的编写。
+- 项目用maven管理，主目录project。进入主目录执行 mvn package即可运行测试并打包jar。
+- 报告在report目录中。
+- 可执行jar包在target目录中，server.jar，client.jar表示服务器和客户端程序。
+- 运行方式，游戏功能演示见 [B站视频](https://www.bilibili.com/video/BV1hY411p7mz?)，记得一键三连。
+- 游戏视频覆盖了多人联机(jw07)、保存进度和地图(jw06)的要求。
+- 已编写测试用例(jw06)，覆盖度大于50%。运行结果如下图。
+
+![](./report/img/coverage.png)
