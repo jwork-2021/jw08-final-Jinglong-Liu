@@ -21,6 +21,13 @@
 ## 说明
 - 已经完成代码和报告的编写。
 - 项目用maven管理，主目录project。进入主目录执行 mvn package即可运行测试并打包jar。
+或在根目录执行
+``` 
+ mvn -B package --file project/pom.xml
+```
+在github Action上用jdk11成功编译(在ubuntu-latest用jdk8需要更改配置中javafx版本，当然本地windows系统用jdk8是成功编译打包的)
+![](./report/img/workflow.png)
+![](./report/img/action.png)
 - 报告在report目录中。
 - 可执行jar包在target目录中，server.jar，client.jar表示服务器和客户端程序。
 - 运行方式，游戏功能演示见 [B站视频](https://www.bilibili.com/video/BV1hY411p7mz?)，记得一键三连。
